@@ -1,0 +1,20 @@
+{% extends "template.html" %}
+{% block title %} - Login{% endblock %}
+{% block content_no_row %}
+<div class="row">
+	<div class="col-sm-6 col-sm-offset-3">
+		<h1>Login</h1>
+		<h3>Please log in.</h3>
+		<form method="POST" action="">
+			{{form.hidden_tag()}}
+			{% for element in (form.name, form.passwd) %}
+			<div class="form-group">
+				{{ element.label }}{{ element(class_="form-control", placeholder=element.label.text) }}
+			</div>
+			{% endfor %}
+			<button type="submit" class="btn btn-primary">Login</button>
+			<span class="help-block">Need an account? <a href="/register">Signup!!</a></span>
+		</form>
+	</div>
+</div>
+{% endblock %}

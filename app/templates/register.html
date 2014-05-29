@@ -1,0 +1,20 @@
+{% extends "template.html" %}
+{% block title %} - Register{% endblock %}
+{% block content_no_row %}
+<div class="row">
+	<div class="col-sm-6 col-sm-offset-3">
+		<h1>Welcome!</h1>
+		<h2>Please register.</h2>
+		<form method="POST" action="">
+			{{form.hidden_tag()}}
+			{% for element in (form.name, form.password) %}
+			<div class="form-group">
+				{{ element.label }}{{ element(class_="form-control", placeholder=element.label.text) }}
+			</div>
+			{% endfor %}
+			<button type="submit" class="btn btn-primary">Register</button>
+		</form>
+		<span class="help-block">Already registered? <a href="/login">Login!</a></span>
+	</div>
+</div>
+{% endblock %}
