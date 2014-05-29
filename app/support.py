@@ -1,11 +1,14 @@
-from app import login_manager, models, flash, app
+from flask import flash
 import hashlib
 from random import choice
 from datetime import datetime
 from threading import Thread
 from flask.ext.mail import Mail, Message
-from twitter import Twitter, OAuth, oauth_dance, read_token_file
 import os
+import models
+
+from flask.ext.login import LoginManager
+login_manager = LoginManager()
 
 @login_manager.user_loader
 def load_user(userid):
@@ -27,40 +30,6 @@ def flash_errors(form):
         except:
             flash("err: %s %s" % (fieldname, messages), "error")
 
-
-mail = Mail(app)
-def send_mail(subject, body, recipients=None, sender="admin@d0b13b8d6e3bc7f6.de"):
-    if recipients is None:
-        recipients = app.config['ADMIN_MAIL_RECIPIENTS']
-    msg = Message(subject, sender=sender, recipients=recipients)
-    msg.body = body
-    def send_async_email(msg):
-        try:
-            mail.send(msg)
-        except:
-            app.logger.error("failed to send message")
-            app.logger.error(msg)
-    thr = Thread(target = send_async_email, args = [msg])
-    thr.start()
-
-
-def tweet(status):
-    try:
-        CONSUMER_KEY, CONSUMER_SECRET, PASSWD, MY_TWITTER_CREDS = app.config['TWITTER_AUTH']
-        oauth_token, oauth_secret = read_token_file(MY_TWITTER_CREDS)
-        twitter = Twitter(auth=OAuth(
-            oauth_token, oauth_secret, CONSUMER_KEY, CONSUMER_SECRET))
-        twitter.statuses.update(status=status)
-    except:
-        app.logger.error("Failed to tweet.  Maybe you just have to call support.setup_twitter_credentials.  Maybe it's more.")
-
-def tweet_async(status):
-    thr = Thread(target = tweet, args = [status])
-    thr.start()
-
-def setup_twitter_credentials():
-    CONSUMER_KEY, CONSUMER_SECRET, PASSWD, MY_TWITTER_CREDS = app.config['TWITTER_AUTH']
-    oauth_dance("Deb 948f09771e203", CONSUMER_KEY, CONSUMER_SECRET, MY_TWITTER_CREDS)
 
 def pretty_datetime(datetime_object):
     return datetime_object.strftime("%Y-%m-%d, %H:%M:%S")
@@ -88,29 +57,3 @@ def pretty_timedelta(timedelta_object):
         return "about %i hours" % hours
     days = hours / 24
     return "about %i days" % days
-
-    return d
-
-@app.context_processor
-def utility_processor():
-    images = ('fract', 'compass', 'horse', 'hourglass', 'map', 'treasurechest')
-    orientations = ('left', 'right')
-    def random_image():
-        return choice(orientations), choice(images)
-    return dict(random_image=random_image)
-
-@app.context_processor
-def utility_processor():
-    congrats = (
-        'Congratulations!',
-        'Well done!',
-        'One step closer ...',
-        'Yippie kay yay!',
-        'And onwards ...',
-        'Well done, keep on!',
-        'Correct',
-        'Yippie yippie yeah, yippie yeah!',
-    )
-    def random_congrats():
-        return choice(congrats)
-    return dict(random_congrats=random_congrats)

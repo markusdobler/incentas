@@ -3,11 +3,9 @@
     <head>
         <meta charset="utf-8">
         <title>Scavenger Hunt{% block title %}{% endblock %}</title>
-        <meta name="description" content="">
-        <meta name="author" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="/static/css/bootstrap.css">
-        <script src="/static/js/libs/modernizr-2.0.6.min.js"></script>
+        <link rel="stylesheet" href="{{url_for('static',filename='css/bootstrap.css')}}">
+        <script src="{{url_for('static',filename='js/libs/modernizr-2.0.6.min.js')}}"></script>
         <script type=text/javascript>
           $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
         </script>
@@ -21,30 +19,17 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="/">Scavenger Hunt</a>
+                <a class="navbar-brand" href="{{url_for('tracking.index')}}">Scavenger Hunt</a>
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a href="/level">Levels</a></li>
-                    {% if levels %}
-                    <!--
-                    <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something else here</a></li>
-                        <li class="divider"></li>
-                        <li class="dropdown-header">Nav header</li>
-                        <li><a href="#">Separated link</a></li>
-                        <li><a href="#">One more separated link</a></li>
-                    </ul>
-                    </li> -->
-                    {% endif %}
-                </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="/login">Login</a></li>
-                    <li><a href="/logout">Logout</a></li>
+                    {% if current_user.is_authenticated() %}
+                    <li><a href="{{url_for('user_management.settings')}}">Settings</a></li>
+                    <li><a href="{{url_for('user_management.logout')}}">Logout</a></li>
+                    {% else %}
+                    <li><a href="{{url_for('user_management.register')}}">Register</a></li>
+                    <li><a href="{{url_for('user_management.login')}}">Login</a></li>
+                    {% endif %}
                 </ul>
             </div><!--/.nav-collapse -->
         </div>
@@ -74,20 +59,16 @@
                 {% endblock %}
             </div>
         </div>
-        {% with orientation, image = random_image() %}
-        <img class="bottom-{{orientation}} hidden-sm hidden-xs" src="/static/img/{{image}}_{{orientation}}.png">
-        {% endwith %}
-
 
         <footer>
         {% block footer %}{% endblock %}
         </footer>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<'+'script src="/static/js/libs/jquery.min.js"><\/script>')
+        <script>window.jQuery || document.write('<'+'script src="{{url_for('static',filename='js/libs/jquery.min.js')}}"><\/script>')
         </script>
-        <script defer src="/static/js/libs/bootstrap.min.js"></script>
-        <script defer src="/static/js/plugins.js"></script>
-        <script defer src="/static/js/script.js"></script>
+        <script defer src="{{url_for('static',filename='js/libs/bootstrap.min.js')}}"></script>
+        <script defer src="{{url_for('static',filename='js/plugins.js')}}"></script>
+        <script defer src="{{url_for('static',filename='js/script.js')}}"></script>
         {% block bottom_extra %}{% endblock %}
     </body>
 

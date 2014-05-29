@@ -1,10 +1,12 @@
+from flask import current_app
+from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.declarative import declarative_base
-from app import db, app
 from sqlalchemy import Column, Integer, String, Float
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, date, timedelta
 import itertools
 
+db = SQLAlchemy()
 Base = declarative_base()
 Base.query = db.session.query_property()
 
@@ -24,8 +26,8 @@ class User(Base):
     def __init__(self, name, password):
         self.name = name
         self.set_password(password)
-        self.measurement_types = app.config['DEFAULT_MEASUREMENT_TYPES']
-        self.assessment_types = app.config['DEFAULT_ASSESSMENT_TYPES']
+        self.measurement_types = current_app.config['DEFAULT_MEASUREMENT_TYPES']
+        self.assessment_types = current_app.config['DEFAULT_ASSESSMENT_TYPES']
         db.session.add(self)
         db.session.commit()
 
@@ -110,9 +112,10 @@ class Assessment(Base):
         'polymorphic_on': '_justoneday'
     }
 
-    _int2value = app.config['ASSESSMENT_LEVELS']
+    """_int2value = current_app.config['ASSESSMENT_LEVELS']
     _value2int = dict((v,k) for (k,v) in
-                      enumerate(app.config['ASSESSMENT_LEVELS']))
+                      enumerate(current_app.config['ASSESSMENT_LEVELS']))
+    """
 
     @property
     def value(self):
@@ -157,6 +160,6 @@ class DailyAssessment(Assessment):
             self._startdate = timestamp
             # self._enddate = timestamp + timedelta(days=1)
 
-
-# create tables
-Base.metadata.create_all(bind=db.engine)
+def create_tables(app):
+    with app.app_context():
+        Base.metadata.create_all(bind=db.engine)
