@@ -50,7 +50,7 @@ def logout():
 @user_management.route("/settings")
 @login_required
 def settings():
-    return "settings"
+    return "settings, authenticated=%s" % current_user.is_authenticated()
 
 
 @user_management.route("/register", methods=['GET','POST'])
