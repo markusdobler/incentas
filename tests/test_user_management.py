@@ -2,7 +2,7 @@ from .common_test_base import *
 
 from flask import current_app, session, appcontext_pushed
 
-class UserManagement(TrackerTestCase):
+class UserManagementTestCase(TrackerTestCase):
     # test models
     def test_create_user(self):
         """ Creation of a user is reflected in the database."""

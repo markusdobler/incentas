@@ -57,3 +57,6 @@ def pretty_timedelta(timedelta_object):
         return "about %i hours" % hours
     days = hours / 24
     return "about %i days" % days
+
+def none2now(now=None):
+    return datetime.now() if now is None else now

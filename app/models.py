@@ -5,6 +5,8 @@ from sqlalchemy import Column, Integer, String, Float
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, date, timedelta
 import itertools
+import math
+from support import none2now
 
 db = SQLAlchemy()
 Base = declarative_base()
@@ -36,6 +38,9 @@ class User(Base):
 
     def check_password(self, password):
         return check_password_hash(self.pw_hash, password)
+
+    def calc_challenge_points(self, now=None):
+        return sum(ch.calc_points(now) for ch in self.challenges)
 
     @property
     def measurement_types(self):
@@ -89,7 +94,7 @@ class Measurement(Base):
             self.user_id = user_or_user_id
         self.type = type
         self.value = value
-        self.timestamp = datetime.now() if timestamp is None else timestamp
+        self.timestamp = none2now(timestamp)
         db.session.add(self)
         db.session.commit()
 
@@ -159,6 +164,83 @@ class DailyAssessment(Assessment):
     def set_period(self, timestamp):
             self._startdate = timestamp
             # self._enddate = timestamp + timedelta(days=1)
+
+
+class Challenge(Base):
+    __tablename__ = 'Challenges'
+    id = db.Column(db.Integer, primary_key = True)
+    user_id = db.Column(db.Integer, db.ForeignKey('Users.id'))
+    user = db.relationship("User",
+                           backref=db.backref("challenges", lazy="dynamic"))
+    title = db.Column(db.String(50))
+    title = db.Column(db.Text)
+    start = db.Column(db.DateTime)
+    end = db.Column(db.DateTime)
+    points_success = db.Column(db.Float)
+    points_fail = db.Column(db.Float)
+    target_value = db.Column(db.Float)
+
+    def __init__(self, user, duration, title, description,
+                 points_success=10, points_fail=-5,
+                 target_value=100., now=None):
+        self.user_id = user.id
+        now = none2now(now)
+        self.start = now
+        self.end = now + duration
+        self.title = title
+        self.description = description
+        self.points_success = points_success
+        self.points_fail = points_fail
+        assert target_value > 0
+        self.target_value = target_value
+        db.session.add(self)
+        db.session.commit()
+
+    def is_overdue(self, now=None):
+        return none2now(now) > self.end
+
+    def is_success(self):
+        return self.current_value() >= self.target_value
+
+    def is_fail(self, now=None):
+        if self.is_success():
+            return False
+        return self.is_overdue(now)
+
+    def calc_points(self, now=None):
+        ratio = self.current_value() / self.target_value
+        if ratio >= 1:
+            return self._overachievement_ratio_to_points(ratio)
+        if none2now(now) < self.end:
+            return 0
+        return self.points_fail
+
+    def _overachievement_ratio_to_points(self, ratio):
+        return self.points_success * math.sqrt(ratio)
+
+    def current_value(self):
+        return sum(cp.value for cp in self.progess.all())
+
+    def add_progress(self, value, timestamp=None):
+        ChallengeProgess(self, value, timestamp)
+
+
+class ChallengeProgess(Base):
+    __tablename__ = 'ChallengeProgesses'
+    id = db.Column(db.Integer, primary_key = True)
+    challenge_id = db.Column(db.Integer, db.ForeignKey('Challenges.id'))
+    challenge = db.relationship("Challenge",
+                                backref=db.backref("progess", lazy="dynamic"))
+    timestamp = db.Column(db.DateTime)
+    value = db.Column(db.Float)
+
+    def __init__(self, challenge, value, timestamp=None):
+        self.challenge = challenge
+        self.value = value
+        self.timestamp = none2now(timestamp)
+        db.session.add(self)
+        db.session.commit()
+
 
 def create_tables(app):
     with app.app_context():
