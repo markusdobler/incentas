@@ -41,21 +41,25 @@ class ChallengeTestCase(TrackerTestCase):
                 ch.is_overdue(now),
                 ch.is_success(),
                 ch.is_fail(now),
+                ch.clipped_percentage_value(),
+                ch.clipped_percentage_time(now),
             )
+        halftime = ch.start + timedelta(.5)
         p1 = ch._overachievement_ratio_to_points(1)
         p4 = ch._overachievement_ratio_to_points(4)
         overdue_time = datetime.now() + timedelta(2)
 
-        assert metrics(ch) == (0, False, False, False)
+        assert metrics(ch) == (0, False, False, False, 0, 0)
+        assert metrics(ch, halftime) == (0, False, False, False, 0, 0.5)
         ch.add_progress(10)
-        assert metrics(ch) == (0, False, False, False)
+        assert metrics(ch) == (0, False, False, False, 0.1, 0)
         ch.add_progress(89)
-        assert metrics(ch) == (0, False, False, False)
+        assert metrics(ch) == (0, False, False, False, 0.99, 0)
         ch.add_progress(1)
-        assert metrics(ch) == (p1, False, True, False)
+        assert metrics(ch) == (p1, False, True, False, 1, 0)
         ch.add_progress(300)
-        assert metrics(ch) == (p4, False, True, False)
-        assert metrics(ch, overdue_time) == (p4, True, True, False)
+        assert metrics(ch) == (p4, False, True, False, 1, 0)
+        assert metrics(ch, overdue_time) == (p4, True, True, False, 1, 1)
 
 
     def test_challenge_progress_to_fail(self):
@@ -70,13 +74,17 @@ class ChallengeTestCase(TrackerTestCase):
                 ch.is_overdue(now),
                 ch.is_success(),
                 ch.is_fail(now),
+                ch.clipped_percentage_value(),
+                ch.clipped_percentage_time(now),
             )
-        overdue_time = datetime.now() + timedelta(2)
+        halftime = ch.start + timedelta(.5)
+        overdue_time = ch.start + timedelta(2)
 
-        assert metrics(ch) == (0, False, False, False)
+        assert metrics(ch) == (0, False, False, False, 0, 0)
         ch.add_progress(99)
-        assert metrics(ch) == (0, False, False, False)
-        assert metrics(ch, overdue_time) == (-10, True, False, True)
+        assert metrics(ch) == (0, False, False, False, .99, 0)
+        assert metrics(ch, halftime) == (0, False, False, False, .99, .5)
+        assert metrics(ch, overdue_time) == (-10, True, False, True, .99, 1)
 
 
     def test_points_from_multiple_challenges(self):

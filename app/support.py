@@ -39,8 +39,11 @@ def secure_datetime(datetime_object=None):
         datetime_object = datetime.now()
     return datetime_object.strftime("%Y-%m-%d_%H.%M.%S")
 
+def totalseconds(timedelta_object):
+    return 24*60*60*timedelta_object.days + timedelta_object.seconds
+
 def pretty_timedelta(timedelta_object):
-    total_seconds = 24*60*60*timedelta_object.days + timedelta_object.seconds
+    total_seconds = totalseconds(timedelta_object)
     if total_seconds <= 1:
         return "1 second"
     if total_seconds < 60:

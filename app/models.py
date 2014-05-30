@@ -6,7 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, date, timedelta
 import itertools
 import math
-from support import none2now
+from support import none2now, totalseconds
 
 db = SQLAlchemy()
 Base = declarative_base()
@@ -183,7 +183,7 @@ class Challenge(Base):
     def __init__(self, user, duration, title, description,
                  points_success=10, points_fail=-5,
                  target_value=100., now=None):
-        self.user_id = user.id
+        self.user = user
         now = none2now(now)
         self.start = now
         self.end = now + duration
@@ -195,6 +195,16 @@ class Challenge(Base):
         self.target_value = target_value
         db.session.add(self)
         db.session.commit()
+
+    def clipped_percentage_time(self, now=None):
+        ratio = 1. * totalseconds(none2now(now)-self.start) / totalseconds(self.end-self.start)
+        if ratio > 1: return 1
+        return ratio
+
+    def clipped_percentage_value(self):
+        ratio = self.current_value() / self.target_value
+        if ratio > 1: return 1
+        return ratio
 
     def is_overdue(self, now=None):
         return none2now(now) > self.end
