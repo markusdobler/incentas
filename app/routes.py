@@ -27,14 +27,14 @@ def login():
     if form.validate_on_submit():
         class LoginException(Exception): pass
         try:
-            user = models.User.query.filter(models.User.name ==
+            user = models.User.query.filter(models.User.username ==
                                         form.name.data).scalar()
             if user is None:
                 raise LoginException("Username unknown.")
             if not user.check_password(form.passwd.data):
                 raise LoginException("Wrong password.")
             login_user(user)
-            flash("Logged in as '%s'." % current_user, "info")
+            flash("Hello, %s." % current_user.fullname, "info")
             return redirect(request.args.get("next") or url_for("tracking.index"))
         except LoginException as err:
             flash(" ".join(err.args), "danger")
@@ -57,7 +57,8 @@ def settings():
 def register():
     form = forms.RegisterForm()
     if form.validate_on_submit():
-        user = models.User(form.name.data, form.password.data)
+        user = models.User(form.username.data, form.password.data,
+                           form.fullname.data)
         flash("Account created.  Now, please log in", "success")
         return redirect(url_for('.login'))
     flash_errors(form)

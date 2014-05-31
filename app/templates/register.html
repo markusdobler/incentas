@@ -7,7 +7,7 @@
 		<h2>Please register.</h2>
 		<form method="POST" action="">
 			{{form.hidden_tag()}}
-			{% for element in (form.name, form.password) %}
+			{% for element in (form.username, form.password, form.fullname) %}
 			<div class="form-group">
 				{{ element.label }}{{ element(class_="form-control", placeholder=element.label.text) }}
 			</div>

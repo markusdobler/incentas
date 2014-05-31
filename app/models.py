@@ -15,7 +15,8 @@ Base.query = db.session.query_property()
 class User(Base):
     __tablename__ = 'Users'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(25), unique=True)
+    username = db.Column(db.String(25), unique=True)
+    fullname = db.Column(db.String(100), unique=True)
     pw_hash = db.Column(db.String(160))
     _measurement_types_as_string = db.Column(db.Text)
     _assessment_types_as_string = db.Column(db.Text)
@@ -23,10 +24,11 @@ class User(Base):
     # for Flask-Login
     is_authenticated = is_active = lambda self: True
     is_anonymous = lambda self: False
-    get_id = lambda self: unicode(self.id)
+    get_id = lambda self: self.username
 
-    def __init__(self, name, password):
-        self.name = name
+    def __init__(self, username, password, fullname=None):
+        self.username = username
+        self.fullname = fullname if fullname else username
         self.set_password(password)
         self.measurement_types = current_app.config['DEFAULT_MEASUREMENT_TYPES']
         self.assessment_types = current_app.config['DEFAULT_ASSESSMENT_TYPES']

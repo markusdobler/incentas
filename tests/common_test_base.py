@@ -89,13 +89,13 @@ class FlaskTestCase(TestCase):
         return dict(generator())
 
 class TrackerTestCase(FlaskTestCase):
-    def create_user(self, name, password):
-        return models.User(name, password)
+    def create_user(self, username, password, fullname=None):
+        return models.User(username, password, fullname)
 
     def login_as(self, user, password):
         response = self.client.get('/login')
         form = self.get_form_elements(response.data)
-        data = dict(name=user.name, passwd=password,
+        data = dict(name=user.username, passwd=password,
                     csrf_token=form['csrf_token']['value'])
         response = self.client.post('/login', data=data)
         return response

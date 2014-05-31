@@ -11,7 +11,7 @@ def create_app(config_object_name='config'):
     app.config.from_object(config_object_name)
 
     from support import login_manager
-    login_manager.login_view = ".login"
+    login_manager.login_view = "user_management.login"
     login_manager.init_app(app)
 
     from models import db, create_tables, User

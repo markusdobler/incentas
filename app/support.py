@@ -5,18 +5,14 @@ from datetime import datetime
 from threading import Thread
 from flask.ext.mail import Mail, Message
 import os
-import models
 
 from flask.ext.login import LoginManager
 login_manager = LoginManager()
 
 @login_manager.user_loader
-def load_user(userid):
-    try:
-        userid = int(userid)
-        return models.User.query.get(userid)
-    except:
-        return None
+def load_user(id):
+    import models
+    return models.User.query.filter_by(username=id).scalar()
 
 def hash(text):
     text = text.encode('utf8')

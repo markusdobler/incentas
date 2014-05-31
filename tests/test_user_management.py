@@ -9,12 +9,14 @@ class UserManagementTestCase(TrackerTestCase):
         assert len(models.User.query.all())==0
         u0 = self.create_user('name', 'password')
         assert len(models.User.query.all())==1
-        u1 = self.create_user('name2', 'password2')
+        u1 = self.create_user('name2', 'password2', 'full name')
         users = models.User.query.all()
         assert u0 == users[0]
-        assert u0.name == 'name'
+        assert u0.username == 'name'
+        assert u0.fullname == 'name'
         assert u1 == users[1]
-        assert users[1].name == 'name2'
+        assert users[1].username == 'name2'
+        assert users[1].fullname == 'full name'
 
     def test_password_handling(self):
         """ Only correct password is accepted.
@@ -42,24 +44,26 @@ class UserManagementTestCase(TrackerTestCase):
     def test_registration(self):
         """Test the account registration via web interface.
 
-        Registration page should show name and password fields.
+        Registration page should show username, fullname and password fields.
         Short names and passwords are rejected.
         CSRF token must be supplied.
         After registration, user is asked to log in.
         Newly-created account is stored in database.
+        If fullname is given, it is stored; otherwise username is used.
         """
         with self.force_enable_login_manager():
             response = self.client.get('/register')
             assert response.status_code == 200
             form = self.get_form_elements(response.data)
-            assert 'name' in form
+            assert 'username' in form
+            assert 'fullname' in form
             assert 'password' in form
 
-            data = {'name': 'username', 'password': 'secr3t',
+            data = {'username': 'username', 'password': 'secr3t',
                     'csrf_token': form['csrf_token']['value']}
 
             with self.assert_flash('Username', 'error'):
-                response = self.client.post('/register', data=dict(data, name='st'))
+                response = self.client.post('/register', data=dict(data, username='st'))
             with self.assert_flash('Password', 'error'):
                 response = self.client.post('/register', data=dict(data, password='12345'))
             with self.assert_flash('CSRF token missing', 'error'):
@@ -70,8 +74,13 @@ class UserManagementTestCase(TrackerTestCase):
                     response = self.client.post('/register', data=data)
             self.assert_redirects(response, '/login')
             user = models.User.query.scalar()
-            assert user.name == data['name']
+            assert user.username == data['username']
             assert user.check_password(data['password'])
+
+            with self.assert_flash('Account created', 'success'):
+                with self.assert_flash('please log in', 'success'):
+                    response = self.client.post('/register', data=dict(data, username="other", fullname="full name"))
+            assert [u.fullname for u in models.User.query.all()] == ['username', 'full name']
 
     def test_force_login(self):
         """ When trying to access restricted pages, the user is redirected to
@@ -121,7 +130,7 @@ class UserManagementTestCase(TrackerTestCase):
                 response = self.client.post('/login', data=dict(data, passwd="pwd_for_name2"))
 
             assert not current_user.is_authenticated()
-            with self.assert_flash("Logged in"):
+            with self.assert_flash("Hello, "):
                 response = self.client.post('/login', data=data)
             assert current_user.is_authenticated()
 

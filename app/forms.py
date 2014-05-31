@@ -8,7 +8,8 @@ from app import models
 
 
 class RegisterForm(Form):
-    name        = TextField('Username', validators = [Required(), Length(min=3, max=25)])
+    username        = TextField('Username', validators = [Required(), Length(min=3, max=25)])
+    fullname        = TextField('Full name (optional)', validators = [Length(max=100)])
     password    = PasswordField('Password', validators = [Required(), Length(min=6, max=40)])
 
 class LoginForm(Form):
