@@ -18,14 +18,23 @@ def hash(text):
     text = text.encode('utf8')
     return hashlib.sha1(text).hexdigest()[:8]
 
-def flash_errors(form):
-    for field, messages in form.errors.items():
-        fieldname = form[field].label.text
-        try:
-            flash("%s: %s" % (fieldname, " & ".join(messages)), "error")
-        except:
-            flash("err: %s %s" % (fieldname, messages), "error")
-
+def flash_errors(form, prepend=''):
+    for key, values in form.errors.items():
+        label = form[key].label.text
+        # flash("%r:%r" %(key, values))
+        if hasattr(values, 'items'):
+            # dict of subforms
+            flash_errors(form[key], "%s%s." % (prepend, label))
+        else:
+            # list of messages and subdicts
+            for i,value in enumerate(values):
+                if hasattr(value, 'items'):
+                    # dict of subform
+                    flash_errors(form[key][i], "%s%s#%i." % (prepend, label, i+1))
+                else:
+                    # message
+                    flash("%s%s: %s" % (prepend, label, value), 'error')
+            pass
 
 def pretty_datetime(datetime_object):
     return datetime_object.strftime("%Y-%m-%d, %H:%M:%S")
