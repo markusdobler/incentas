@@ -181,10 +181,11 @@ class Challenge(Base):
     points_success = db.Column(db.Float)
     points_fail = db.Column(db.Float)
     target_value = db.Column(db.Float)
+    unit = db.Column(db.String(20))
 
     def __init__(self, user, duration, title, description,
                  points_success=10, points_fail=-5,
-                 target_value=100., now=None):
+                 target_value=100., unit="%", now=None):
         self.user = user
         now = none2now(now)
         self.start = now
@@ -195,6 +196,7 @@ class Challenge(Base):
         self.points_fail = points_fail
         assert target_value > 0
         self.target_value = target_value
+        self.unit = unit
         db.session.add(self)
         db.session.commit()
 
@@ -231,25 +233,27 @@ class Challenge(Base):
         return self.points_success * math.sqrt(ratio)
 
     def current_value(self):
-        return sum(cp.value for cp in self.progess.all())
+        return sum(cp.value for cp in self.progress.all())
 
-    def add_progress(self, value, timestamp=None):
-        ChallengeProgess(self, value, timestamp)
+    def add_progress(self, value, timestamp=None, note=''):
+        ChallengeProgress(self, value, timestamp=timestamp, note=note)
 
 
-class ChallengeProgess(Base):
-    __tablename__ = 'ChallengeProgesses'
+class ChallengeProgress(Base):
+    __tablename__ = 'ChallengeProgresses'
     id = db.Column(db.Integer, primary_key = True)
     challenge_id = db.Column(db.Integer, db.ForeignKey('Challenges.id'))
     challenge = db.relationship("Challenge",
-                                backref=db.backref("progess", lazy="dynamic"))
-    timestamp = db.Column(db.DateTime)
+                                backref=db.backref("progress", lazy="dynamic"))
     value = db.Column(db.Float)
+    timestamp = db.Column(db.Date)
+    note = db.Column(db.Text(500))
 
-    def __init__(self, challenge, value, timestamp=None):
+    def __init__(self, challenge, value, timestamp=None, note=''):
         self.challenge = challenge
         self.value = value
         self.timestamp = none2now(timestamp)
+        self.note = note
         db.session.add(self)
         db.session.commit()
 

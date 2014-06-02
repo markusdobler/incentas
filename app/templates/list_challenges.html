@@ -1,0 +1,19 @@
+{% extends "template.html" %}
+{% block title %} - Challenges for {{current_user.fullname}}{% endblock %}
+{% block content_no_row %}
+<div class="row">
+	<h1>{{current_user.fullname}}'s challenges</h1>
+	total points = {{current_user.calc_challenge_points()}}
+	<ol>
+		{% for challenge in challenges %}
+		<li>
+		<a href="{{url_for('.challenge',id=challenge.id)}}">{{challenge.title}}</a>
+			{{challenge.start}} - {{challenge.end}}
+			{{challenge.calc_points()}} points,
+			{{challenge.clipped_percentage_time() * 100}}% time passed,
+			{{challenge.current_value()}} {{challenge.unit}} / {{challenge.target_value}} {{challenge.unit}} achieved
+		</li>
+		{% endfor %}
+	</ol>
+</div>
+{% endblock %}

@@ -1,7 +1,7 @@
 from flask.ext.wtf import Form
-from wtforms import TextField, PasswordField, IntegerField, RadioField, FileField, HiddenField, TextAreaField, FieldList, FormField
-from wtforms.validators import Required, Length
-from app import models
+from wtforms import TextField, PasswordField, IntegerField, RadioField, DateTimeField, DateField
+from wtforms import FileField, HiddenField, TextAreaField, FieldList, FormField, DecimalField
+from wtforms.validators import Required, Length, NumberRange, Optional
 
 # set your classes here
 
@@ -46,3 +46,26 @@ class CheckinNoteField(Form):
 
 class CheckinNotesForm(Form):
     notes = FieldList(FormField(CheckinNoteField))
+
+
+class ChallengeProgressForm(Form):
+    def single_challenge_progress_subform(value_required=True):
+        validators_for_value = [NumberRange(min=0)]
+        if not value_required:
+            validators_for_value = [Optional()] + validators_for_value
+
+        class SingleChallengeProgressSubform(Form):
+            id = HiddenField('ID')
+            challenge_id = HiddenField('ChallengeID')
+            timestamp = DateField('Timestamp')
+            value = DecimalField('Value', validators_for_value)
+            note = TextField('Note', [Length(max=500)])
+
+        return SingleChallengeProgressSubform
+
+    existing_progress = FieldList(FormField(single_challenge_progress_subform()))
+    add_progress = FormField(single_challenge_progress_subform(value_required=False))
+
+    def read_existing_progress(self, challenge):
+        for p in challenge.progress:
+            self.existing_progress.append_entry(p)
