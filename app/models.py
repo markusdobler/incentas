@@ -89,11 +89,8 @@ class Measurement(Base):
     user = db.relationship("User",
                            backref=db.backref("measurements", lazy="dynamic"))
 
-    def __init__(self, user_or_user_id, type, value, timestamp=None):
-        try:
-            self.user_id = user_or_user_id.id
-        except AttributeError:
-            self.user_id = user_or_user_id
+    def __init__(self, user, type, value, timestamp=None):
+        self.user = user
         self.type = type
         self.value = value
         self.timestamp = none2now(timestamp)
@@ -131,12 +128,9 @@ class Assessment(Base):
     def value(self, new_value):
         self.value_int = self._value2int[new_value]
 
-    def __init__(self, user_or_user_id, type, value, timestamp=None,
+    def __init__(self, user, type, value, timestamp=None,
                  just_one_day=False):
-        try:
-            self.user_id = user_or_user_id.id
-        except AttributeError:
-            self.user_id = user_or_user_id
+        self.user = user
         self.type = type
         self.value = value
         self.set_period(date.today() if timestamp is None else timestamp)

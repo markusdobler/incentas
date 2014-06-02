@@ -1,4 +1,4 @@
-from flask import *
+from flask import Blueprint, render_template, flash, redirect, url_for, request
 import forms
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from support import flash_errors
