@@ -8,7 +8,7 @@ import models
 # Controllers
 #------------------------------------------------------------------------------#
 
-bp = Blueprint('tracking', __name__, template_folder='templates',
+bp = Blueprint('incentas', __name__, template_folder='templates',
               static_folder='static')
 user_management = Blueprint('user_management', __name__,
                             template_folder='templates', static_folder='static')
@@ -35,7 +35,7 @@ def login():
                 raise LoginException("Wrong password.")
             login_user(user)
             flash("Hello, %s." % current_user.fullname, "info")
-            return redirect(request.args.get("next") or url_for("tracking.index"))
+            return redirect(request.args.get("next") or url_for("incentas.index"))
         except LoginException as err:
             flash(" ".join(err.args), "danger")
     flash_errors(form)
@@ -44,7 +44,7 @@ def login():
 @user_management.route("/logout")
 def logout():
     logout_user()
-    return redirect(url_for("tracking.index"))
+    return redirect(url_for("incentas.index"))
 
 
 @user_management.route("/settings")
