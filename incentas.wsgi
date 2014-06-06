@@ -5,7 +5,8 @@ sys.path.insert(0, '/home/sfoo/.virtualenvs/incentas/lib/python2.6/site-packages
 sys.path.insert(0, '/home/sfoo/src/incentas')
 sys.path.insert(0, '/home/sfoo/src/incentas/app')
 
-from app import app as application
+from app import create_app
+application = create_app()
 
 if not application.debug:
     import logging
