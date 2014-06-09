@@ -16,7 +16,7 @@ class User(Base):
     __tablename__ = 'Users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(25), unique=True)
-    fullname = db.Column(db.String(100), unique=True)
+    fullname = db.Column(db.String(100))
     pw_hash = db.Column(db.String(160))
     _measurement_types_as_string = db.Column(db.Text)
     _assessment_types_as_string = db.Column(db.Text)
@@ -169,7 +169,7 @@ class Challenge(Base):
     user = db.relationship("User",
                            backref=db.backref("challenges", lazy="dynamic"))
     title = db.Column(db.String(50))
-    title = db.Column(db.Text)
+    description = db.Column(db.Text)
     start = db.Column(db.DateTime)
     end = db.Column(db.DateTime)
     points_success = db.Column(db.Float)
