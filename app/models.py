@@ -183,7 +183,10 @@ class Challenge(Base):
         self.user = user
         now = none2now(now)
         self.start = now
-        self.end = now + duration
+        try:
+            self.end = now + duration
+        except:
+            self.end = now + timedelta(days=duration)
         self.title = title
         self.description = description
         self.points_success = points_success
