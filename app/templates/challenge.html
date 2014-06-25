@@ -3,11 +3,17 @@
 
 {% macro datepicker(date_field, class_="col-sm-3", pre="") -%}
 <div class="{{class_}}">
-	{{pre}}
 	<div class="pull-right">
-		{{ date_field(class="datepicker-hidden-input", type="hidden") }}
-		<span class="datepicker-display">{{date_field.data}}</span>
-		<button type="button" class="btn btn-default btn-sm datepicker-button glyphicon glyphicon-th"></button>
+		{% if pre %}
+		<div>
+			{{pre|safe}}
+		</div>
+		{% endif %}
+		<div>
+			{{ date_field(class="datepicker-hidden-input", type="hidden") }}
+			<span class="datepicker-display">{{date_field.data}}</span>
+			<button type="button" class="btn btn-default btn-sm datepicker-button glyphicon glyphicon-th"></button>
+		</div>
 	</div>
 </div>
 {%- endmacro %}
@@ -16,12 +22,58 @@
 <div class="row">
 	<h1>{{challenge.title}}</h1>
 	<div class="col-sm-10 col-sm-offset-1">
+		<div class="row">
+			{% with context=challenge.bootstrap_context() %}
+			<div class="jumbotron jumbotron-challenge-{{context}}">
+				<div class="row">
+					<div class="challenge-value col-sm-4">
+						<div>
+							<span class="done"> {{challenge.current_value()}} </span>
+							/
+							<span class="target"> {{challenge.target_value}} </span>
+							<span class="unit"> {{challenge.unit}} done</span>
+						</div>
+							<div>
+									{{ progress_bar(100*challenge.value_ratio(), context)}}
+							</div>
+					</div>
+					<div class="challenge-points center-block col-sm-2 col-sm-offset-1">
+						<div class="value">{{"%8.1f" % challenge.calc_points()}}</div>
+						<div>points{{"" if challenge.is_overdue() else " so far"}}</div>
+					</div>
+					<div class="challenge-time col-sm-4 col-sm-offset-1 text-right">
+						<div>
+							<span class="done"> {{challenge.days_left()}} </span>
+							/
+							<span class="target"> {{challenge.duration()}} </span>
+							<span class="unit"> days left</span>
+						</div>
+						<div>
+							{{ progress_bar(100*challenge.time_ratio(), context)}}
+						</div>
+					</div>
+				</div>
+				<div class="row">
+				</div>
+				<div><b class="highlight">Your task:</b> {{ challenge.description }}</div>
+				<div class="smallprint">
+					<span class="highlight">{{challenge.points_success}}</span> points to win;
+					<span class="highlight">{{challenge.points_fail}}</span> points to lose.
+					Runs from <span class="highlight">{{challenge.start}}</span>
+					to <span class="highlight">{{challenge.end}}</span>.
+				</div>
+			{% endwith %}
+		</div>
+	</div>
+
 		<form method="POST" action="">
 			<h2>Add new progress</h2>
 			{{form.hidden_tag()}}
 			<div class="row">
 				{{form.add_progress.hidden_tag()}}
-				{{datepicker(form.add_progress.timestamp, pre=form.add_progress.timestamp.label(class_="pull-right"))}}
+				{% with pre=form.add_progress.timestamp.label %}
+				{{datepicker(form.add_progress.timestamp, pre=pre)}}
+				{% endwith %}
 				<div class="col-sm-2">
 					{{ form.add_progress.value.label }}
 					<div class="input-group">
@@ -61,3 +113,10 @@
 		<div>
 </div>
 {% endblock %}
+
+{% macro progress_bar(percentage, level) %}
+		<div class="progress">
+			<div class="progress-bar progress-bar-{{level}}" style="width: {{percentage}}%">
+			</div>
+		</div>
+{% endmacro %}

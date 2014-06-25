@@ -5886,94 +5886,184 @@ body {
   background-color: white;
   padding-bottom: 200px;
 }
-.jumbotron {
+.jumbotron-challenge-danger {
   background-color: #fce6e2;
-  line-height: 1.4;
 }
-.jumbotron .highlight,
-.jumbotron .ip,
-.jumbotron #my-ip {
+.jumbotron-challenge-danger .challenge-points {
+  text-align: center;
+  line-height: 0.9;
+  font-size: 20px;
+  color: #999999;
+}
+.jumbotron-challenge-danger .challenge-points .value {
+  font-size: 40px;
+  font-weight: bold;
+  color: #f06c56;
+}
+.jumbotron-challenge-danger .challenge-value,
+.jumbotron-challenge-danger .challenge-time {
+  font-size: 10px;
+  color: #333333;
+}
+.jumbotron-challenge-danger .challenge-value .done,
+.jumbotron-challenge-danger .challenge-time .done {
+  font-size: 30px;
+  font-weight: bold;
+  color: #f6a99c;
+}
+.jumbotron-challenge-danger .challenge-value .target,
+.jumbotron-challenge-danger .challenge-time .target {
+  font-size: 25px;
   color: #7b1404;
 }
-.jumbotron #my-slot {
+.jumbotron-challenge-danger .challenge-value .unit,
+.jumbotron-challenge-danger .challenge-time .unit {
+  font-size: 15px;
+  color: #7b1404;
+}
+.jumbotron-challenge-danger .highlight {
+  color: #7b1404;
+}
+.jumbotron-challenge-danger .smallprint {
+  margin-top: 20px;
+  font-size: 15px;
+  color: #555555;
+}
+.jumbotron-challenge-success {
+  background-color: #ccf2d7;
+}
+.jumbotron-challenge-success .challenge-points {
+  text-align: center;
+  line-height: 0.9;
+  font-size: 20px;
   color: #999999;
 }
-.jumbotron .slot-solved {
-  color: #11a93f;
+.jumbotron-challenge-success .challenge-points .value {
+  font-size: 40px;
+  font-weight: bold;
+  color: #52d279;
 }
-.jumbotron .slot-open {
-  color: #9a4a3d;
+.jumbotron-challenge-success .challenge-value,
+.jumbotron-challenge-success .challenge-time {
+  font-size: 10px;
+  color: #333333;
 }
-.jumbotron .timestamp {
+.jumbotron-challenge-success .challenge-value .done,
+.jumbotron-challenge-success .challenge-time .done {
+  font-size: 30px;
+  font-weight: bold;
+  color: #8fe2a8;
+}
+.jumbotron-challenge-success .challenge-value .target,
+.jumbotron-challenge-success .challenge-time .target {
+  font-size: 25px;
+  color: #035b1e;
+}
+.jumbotron-challenge-success .challenge-value .unit,
+.jumbotron-challenge-success .challenge-time .unit {
+  font-size: 15px;
+  color: #035b1e;
+}
+.jumbotron-challenge-success .highlight {
+  color: #035b1e;
+}
+.jumbotron-challenge-success .smallprint {
+  margin-top: 20px;
+  font-size: 15px;
+  color: #555555;
+}
+.jumbotron-challenge-info {
+  background-color: #ced8ef;
+}
+.jumbotron-challenge-info .challenge-points {
+  text-align: center;
+  line-height: 0.9;
+  font-size: 20px;
   color: #999999;
-  font-size: 80%;
+}
+.jumbotron-challenge-info .challenge-points .value {
+  font-size: 40px;
+  font-weight: bold;
+  color: #5a7ec9;
+}
+.jumbotron-challenge-info .challenge-value,
+.jumbotron-challenge-info .challenge-time {
+  font-size: 10px;
+  color: #333333;
+}
+.jumbotron-challenge-info .challenge-value .done,
+.jumbotron-challenge-info .challenge-time .done {
+  font-size: 30px;
+  font-weight: bold;
+  color: #94abdc;
+}
+.jumbotron-challenge-info .challenge-value .target,
+.jumbotron-challenge-info .challenge-time .target {
+  font-size: 25px;
+  color: #051e52;
+}
+.jumbotron-challenge-info .challenge-value .unit,
+.jumbotron-challenge-info .challenge-time .unit {
+  font-size: 15px;
+  color: #051e52;
+}
+.jumbotron-challenge-info .highlight {
+  color: #051e52;
+}
+.jumbotron-challenge-info .smallprint {
+  margin-top: 20px;
+  font-size: 15px;
+  color: #555555;
+}
+.jumbotron-challenge-warning {
+  background-color: #fcf4e2;
+}
+.jumbotron-challenge-warning .challenge-points {
+  text-align: center;
+  line-height: 0.9;
+  font-size: 20px;
+  color: #999999;
+}
+.jumbotron-challenge-warning .challenge-points .value {
+  font-size: 40px;
+  font-weight: bold;
+  color: #f0bc56;
+}
+.jumbotron-challenge-warning .challenge-value,
+.jumbotron-challenge-warning .challenge-time {
+  font-size: 10px;
+  color: #333333;
+}
+.jumbotron-challenge-warning .challenge-value .done,
+.jumbotron-challenge-warning .challenge-time .done {
+  font-size: 30px;
+  font-weight: bold;
+  color: #f6d89c;
+}
+.jumbotron-challenge-warning .challenge-value .target,
+.jumbotron-challenge-warning .challenge-time .target {
+  font-size: 25px;
+  color: #7b5304;
+}
+.jumbotron-challenge-warning .challenge-value .unit,
+.jumbotron-challenge-warning .challenge-time .unit {
+  font-size: 15px;
+  color: #7b5304;
+}
+.jumbotron-challenge-warning .highlight {
+  color: #7b5304;
+}
+.jumbotron-challenge-warning .smallprint {
+  margin-top: 20px;
+  font-size: 15px;
+  color: #555555;
 }
 .container .jumbotron {
+  line-height: 1.4;
   border-radius: 30px;
 }
 .slots {
   background-color: #eeeeee;
-}
-#buckets .place {
-  float: left;
-}
-#buckets .place .bucket {
-  height: 104px;
-  margin: 20px;
-  position: relative;
-  border-left: 4px solid #9a7a3d;
-  border-right: 4px solid #9a7a3d;
-  border-bottom: 4px solid #9a7a3d;
-}
-#buckets .place .bucket .water {
-  background-color: #658bdc;
-  position: absolute;
-  bottom: 0px;
-  width: 100%;
-}
-#buckets .place .bucket .water-solved {
-  background-color: #f6a99c;
-}
-#buckets .place .bucket .label {
-  color: #051e52;
-  font-size: 15px;
-  position: absolute;
-  bottom: -30px;
-  text-align: center;
-  width: 100%;
-  z-index: 100;
-}
-#buckets .place .bucket .target {
-  position: absolute;
-  bottom: 0px;
-  border-top: 2px solid #7b1404;
-  width: 3px;
-  z-index: 200;
-}
-#buckets .place .bucket .target.left {
-  left: 0px;
-}
-#buckets .place .bucket .target.right {
-  right: 0px;
-}
-#buckets .place .ui-draggable-dragging {
-  border-color: #7b5304;
-}
-#buckets .place .ui-draggable-dragging .water {
-  background-color: #1d4599;
-  opacity: 0.9;
-}
-#buckets .place .ui-draggable-dragging .water-solved {
-  background-color: #f67662;
-}
-#buckets .place-active .bucket {
-  border-color: #7b5304;
-}
-#buckets .place-active .bucket .water {
-  background-color: #1d4599;
-}
-#buckets .place-active .bucket .water-solved {
-  background-color: #f67662;
 }
 h1 {
   color: #7b1404;
@@ -6036,17 +6126,6 @@ h2 {
 .alert-error .alert-link {
   color: #4a0c02;
 }
-.jumbotron.timeout span.timeout-delay,
-.jumbotron.timeout span.timeout-delta,
-.jumbotron.timeout span.timeout-end {
-  color: #7b1404;
-}
-.jumbotron.timeout span.timeout-end {
-  font-weight: 400;
-}
-.jumbotron.timeout span.timeout-delta {
-  font-weight: 900;
-}
 span.checkin-time {
   color: #7b1404;
 }
@@ -6055,48 +6134,6 @@ span.file-input-name {
 }
 form.form-level {
   padding-top: 100px;
-}
-ol.levels-overview a:focus {
-  outline: none;
-  text-decoration: none;
-}
-ol.levels-overview a:hover {
-  text-decoration: none;
-}
-ol.levels-overview li {
-  font-size: 20pt;
-  list-style: none;
-}
-ol.levels-overview li:before {
-  float: left;
-  clear: left;
-  text-align: right;
-  padding-right: 10px;
-  width: 30px;
-  color: #7b1404;
-}
-ol.levels-overview li.level-solved:before {
-  content: '\2611';
-}
-ol.levels-overview li.level-timeout:before {
-  content: '\231B';
-}
-ol.levels-overview li.level-open:before {
-  content: '\2610';
-}
-ol.levels-overview li.level-to_review:before {
-  content: '\2709';
-}
-ol.levels-overview li:hover {
-  background-color: #f6a99c;
-}
-ol.levels-overview li .level-title {
-  color: #333333;
-}
-ol.levels-overview li .level-time,
-ol.levels-overview li .level-details {
-  font-size: 10pt;
-  color: #999999;
 }
 img.bottom-left,
 img.bottom-right {

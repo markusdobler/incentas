@@ -194,15 +194,22 @@ class Challenge(Base):
         db.session.add(self)
         db.session.commit()
 
-    def clipped_percentage_time(self, now=None):
-        ratio = 1. * totalseconds(none2now(now)-self.start) / totalseconds(self.end-self.start)
-        if ratio > 1: return 1
-        return ratio
+    def time_ratio(self, now=None):
+        seconds_all = totalseconds(self.end-self.start)
+        seconds_done = totalseconds(none2now(now)-self.start)
+        return 1. * seconds_done / seconds_all
 
-    def clipped_percentage_value(self):
-        ratio = self.current_value() / self.target_value
-        if ratio > 1: return 1
-        return ratio
+    def value_ratio(self):
+        return self.current_value() / self.target_value
+
+    def duration(self):
+        delta = (self.end - self.start)
+        return delta.days
+
+    def days_left(self, now=None):
+        now = min(self.end, none2now(now))
+        delta = (self.end - none2now(now))
+        return delta.days
 
     def is_overdue(self, now=None):
         return none2now(now) > self.end
@@ -214,6 +221,14 @@ class Challenge(Base):
         if self.is_success():
             return False
         return self.is_overdue(now)
+
+    def bootstrap_context(self, now=None):
+        if self.is_success(): return "success"
+        if self.is_fail(now): return "danger"
+        value_left = 1 - self.value_ratio()
+        time_left = 1 - self.time_ratio()
+        if value_left > 1.5*time_left: return "warning"
+        return "info"
 
     def calc_points(self, now=None):
         ratio = self.current_value() / self.target_value
