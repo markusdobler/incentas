@@ -10,7 +10,6 @@
 		<a href="{{url_for('.challenge',id=challenge.id)}}">{{challenge.title}}</a>
 			{{challenge.start}} - {{challenge.end}}
 			{{challenge.calc_points()}} points,
-			{{challenge.clipped_percentage_time() * 100}}% time passed,
 			{{challenge.current_value()}} {{challenge.unit}} / {{challenge.target_value}} {{challenge.unit}} achieved
 		</li>
 		{% endfor %}
