@@ -35,14 +35,14 @@ def list_challenges(username=None):
             print " * %s: %.1f/%.1f (%4.1fP)" % (ch.title, ch.current_value(),
                                      ch.target_value, ch.calc_points())
 
-@manager.option('-u', '--user', help='User', required=True)
-@manager.option('-d', '--duration', help='Duration in days', type=int, required=True)
-@manager.option('-s', '--points-success', help='Points if successful', type=int, default=10)
-@manager.option('-f', '--points-fail', help='Points if failed', type=int, default=-5)
-@manager.option('-v', '--target-value', help='Target value', type=float, required=True)
-@manager.option('-x', '--unit', help='Unit of target value', required=True)
-@manager.option('-T', '--title', help='Title', default=None)
 @manager.option('-D', '--description', help='Description', default=None)
+@manager.option('-T', '--title', help='Title', default=None)
+@manager.option('-x', '--unit', help='Unit of target value', required=True)
+@manager.option('-v', '--target-value', help='Target value', type=float, required=True)
+@manager.option('-f', '--points-fail', help='Points if failed', type=int, default=-5)
+@manager.option('-s', '--points-success', help='Points if successful', type=int, default=10)
+@manager.option('-d', '--duration', help='Duration in days', type=int, required=True)
+@manager.option('-u', '--user', help='User', required=True)
 def new_challenge(user, duration, points_success, points_fail,
                   target_value, unit, title, description):
     user = models.User.query.filter_by(username=user).one()
