@@ -1,4 +1,4 @@
-from flask import current_app
+from flask import current_app, flash
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Float
@@ -7,6 +7,8 @@ from datetime import datetime, date, timedelta
 import itertools
 import math
 from support import none2now, totalseconds
+
+from forms import FormValidationError
 
 db = SQLAlchemy()
 
@@ -159,10 +161,14 @@ class DailyAssessment(Assessment):
             self._startdate = timestamp
             # self._enddate = timestamp + timedelta(days=1)
 
-
 class Challenge(db.Model):
     __tablename__ = 'Challenges'
     id = db.Column(db.Integer, primary_key = True)
+    type = db.Column(db.String(10))
+    __mapper_args__ = {
+            'polymorphic_identity':'base',
+            'polymorphic_on':type
+        }
     user_id = db.Column(db.Integer, db.ForeignKey('Users.id'))
     user = db.relationship("User",
                            backref=db.backref("challenges", lazy="dynamic"))
@@ -172,12 +178,10 @@ class Challenge(db.Model):
     end = db.Column(db.DateTime)
     points_success = db.Column(db.Float)
     points_fail = db.Column(db.Float)
-    target_value = db.Column(db.Float)
-    unit = db.Column(db.String(20))
 
     def __init__(self, user, duration, title, description,
                  points_success=10, points_fail=-5,
-                 target_value=100., unit="%", now=None):
+                 now=None, **kwargs):
         self.user = user
         now = none2now(now)
         self.start = now
@@ -189,9 +193,8 @@ class Challenge(db.Model):
         self.description = description
         self.points_success = points_success
         self.points_fail = points_fail
-        assert target_value > 0
-        self.target_value = target_value
-        self.unit = unit
+        for k, v in kwargs.items():
+            self.__setattr__(k, v)
         db.session.add(self)
         db.session.commit()
 
@@ -200,8 +203,8 @@ class Challenge(db.Model):
         seconds_done = totalseconds(none2now(now)-self.start)
         return 1. * seconds_done / seconds_all
 
-    def value_ratio(self):
-        return self.current_value() / self.target_value
+    def is_overdue(self, now=None):
+        return none2now(now) > self.end
 
     def duration(self):
         delta = (self.end - self.start)
@@ -212,8 +215,43 @@ class Challenge(db.Model):
         delta = (self.end - none2now(now))
         return delta.days
 
-    def is_overdue(self, now=None):
-        return none2now(now) > self.end
+
+
+class DailyEvaluationChallenge(Challenge):
+    __tablename__ = 'DailyEvaluationChallenges'
+    id = db.Column(db.Integer, db.ForeignKey('Challenges.id'), primary_key = True)
+    __mapper_args__ = {'polymorphic_identity':'daily_evaluation'}
+    label_good = db.Column(db.String(30))
+    label_marginal = db.Column(db.String(30))
+    label_bad = db.Column(db.String(30))
+    
+    def is_success(self):
+        return "TODO"
+
+    def is_fail(self, now=None):
+        return "TODO"
+
+    def bootstrap_context(self, now=None):
+        print "TODO"
+        return "info"
+
+    def calc_points(self, now=None):
+        print "TODO"
+        return self.points_fail
+
+    def update_from_form_data(self, data):
+        return "todo"
+
+class TargetValueChallenge(Challenge):
+    __tablename__ = 'TargetValueChallenges'
+    id = db.Column(db.Integer, db.ForeignKey('Challenges.id'), primary_key = True)
+    __mapper_args__ = {'polymorphic_identity':'target_value'}
+    target_value = db.Column(db.Float)
+    unit = db.Column(db.String(20))
+
+
+    def value_ratio(self):
+        return self.current_value() / self.target_value
 
     def is_success(self):
         return self.current_value() >= self.target_value
@@ -221,7 +259,7 @@ class Challenge(db.Model):
     def is_fail(self, now=None):
         if self.is_success():
             return False
-        return self.is_overdue(now)
+        return self.is_overdue()
 
     def bootstrap_context(self, now=None):
         if self.is_success(): return "success"
@@ -246,14 +284,31 @@ class Challenge(db.Model):
         return sum(cp.value for cp in self.progress.all())
 
     def add_progress(self, value, timestamp=None, note=''):
-        ChallengeProgress(self, value, timestamp=timestamp, note=note)
+        TargetValueChallengeProgress(self, value, timestamp=timestamp, note=note)
 
+    def update_from_form_data(self, data):
+        updated_progress_dict = dict((int(e['id']), e) for e in data['existing_progress'])
+        print updated_progress_dict
+        for p in self.progress:
+            update = updated_progress_dict[p.id]
+            p.value = update['value']
+            p.timestamp = update['timestamp']
+            p.note = update['note']
+        new_progress = data['add_progress']
+        db.session.commit()
 
-class ChallengeProgress(db.Model):
-    __tablename__ = 'ChallengeProgresses'
+        if new_progress['value']:
+            self.add_progress(new_progress['value'], new_progress['timestamp'],
+                              new_progress['note'])
+        elif new_progress['note']:
+            raise FormValidationError(
+                'If you want to store a new progress update, you have to submit a value')
+
+class TargetValueChallengeProgress(Base):
+    __tablename__ = 'TargetValueChallengeProgresses'
     id = db.Column(db.Integer, primary_key = True)
-    challenge_id = db.Column(db.Integer, db.ForeignKey('Challenges.id'))
-    challenge = db.relationship("Challenge",
+    challenge_id = db.Column(db.Integer, db.ForeignKey('TargetValueChallenges.id'))
+    challenge = db.relationship("TargetValueChallenge",
                                 backref=db.backref("progress", lazy="dynamic"))
     value = db.Column(db.Float)
     timestamp = db.Column(db.Date)

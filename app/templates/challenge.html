@@ -1,23 +1,6 @@
 {% extends "template.html" %}
 {% block title %} - Challenge {{challenge.title}}{% endblock %}
 
-{% macro datepicker(date_field, class_="col-sm-3", pre="") -%}
-<div class="{{class_}}">
-	<div class="pull-right">
-		{% if pre %}
-		<div>
-			{{pre|safe}}
-		</div>
-		{% endif %}
-		<div>
-			{{ date_field(class="datepicker-hidden-input", type="hidden") }}
-			<span class="datepicker-display">{{date_field.data}}</span>
-			<button type="button" class="btn btn-default btn-sm datepicker-button glyphicon glyphicon-th"></button>
-		</div>
-	</div>
-</div>
-{%- endmacro %}
-
 {% block content_no_row %}
 <div class="row">
 	<h1>{{challenge.title}}</h1>
@@ -27,15 +10,8 @@
 			<div class="jumbotron jumbotron-challenge-{{context}}">
 				<div class="row">
 					<div class="challenge-value col-sm-4">
-						<div>
-							<span class="done"> {{challenge.current_value()}} </span>
-							/
-							<span class="target"> {{challenge.target_value}} </span>
-							<span class="unit"> {{challenge.unit}} done</span>
-						</div>
-							<div>
-									{{ progress_bar(100*challenge.value_ratio(), context)}}
-							</div>
+					{% block challenge_jumbotron_left scoped %}
+					{% endblock %}
 					</div>
 					<div class="challenge-points center-block col-sm-2 col-sm-offset-1">
 						<div class="value">{{"%8.1f" % challenge.calc_points()}}</div>
@@ -66,53 +42,30 @@
 		</div>
 	</div>
 
-		<form method="POST" action="">
-			<h2>Add new progress</h2>
-			{{form.hidden_tag()}}
-			<div class="row">
-				{{form.add_progress.hidden_tag()}}
-				{% with pre=form.add_progress.timestamp.label %}
-				{{datepicker(form.add_progress.timestamp, pre=pre)}}
-				{% endwith %}
-				<div class="col-sm-2">
-					{{ form.add_progress.value.label }}
-					<div class="input-group">
-						{{ form.add_progress.value(class_="form-control", placeholder=form.add_progress.value.label.text) }}
-						<span class="input-group-addon">{{challenge.unit}}</span>
-					</div>
-				</div>
-				<div class="col-sm-6">
-					{{ form.add_progress.note.label }}
-					{{ form.add_progress.note(class_="form-control", placeholder=form.add_progress.note.label.text) }}
-				</div>
-			</div>
-			<h2>Modify previous progress</h2>
-			{% for progress in form.existing_progress %}
-			<div class="row">
-				{{progress.hidden_tag()}}
-				{{datepicker(progress.timestamp)}}
-				<div class="col-sm-2">
-					{{ progress.value.label(class_="sr-only") }}
-					<div class="input-group">
-						{{ progress.value(class_="form-control", placeholder=progress.value.label.text) }}
-						<span class="input-group-addon">{{challenge.unit}}</span>
-					</div>
-				</div>
-				<div class="col-sm-6">
-					{{ progress.note.label(class_="sr-only") }}
-					{{ progress.note(class_="form-control", placeholder=progress.note.label.text) }}
-				</div>
-			</div>
-			{% endfor %}
-			<div class="row">
-				<div class="form-group col-sm-2 col-sm-offset-1">
-					<button type="submit" class="btn btn-primary">Submit</button>
-				</div>
-			</div>
+	<form method="POST" action="">
+		{% block form %}
+		{% endblock %}
 		</form>
 		<div>
 </div>
 {% endblock %}
+
+{% macro datepicker(date_field, class_="col-sm-3", pre="") -%}
+<div class="{{class_}}">
+	<div class="pull-right">
+		{% if pre %}
+		<div>
+			{{pre|safe}}
+		</div>
+		{% endif %}
+		<div>
+			{{ date_field(class="datepicker-hidden-input", type="hidden") }}
+			<span class="datepicker-display">{{date_field.data}}</span>
+			<button type="button" class="btn btn-default btn-sm datepicker-button glyphicon glyphicon-th"></button>
+		</div>
+	</div>
+</div>
+{%- endmacro %}
 
 {% macro progress_bar(percentage, level) %}
 		<div class="progress">

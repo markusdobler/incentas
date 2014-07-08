@@ -1,0 +1,53 @@
+{% extends "challenge.html" %}
+{% block challenge_jumbotron_left %}
+<div>
+	<span class="done"> todo </span>
+	/
+	<span class="target"> todo </span>
+	<span class="unit"> todo </span>
+</div>
+<div>
+	{{ progress_bar(42, context)}}
+</div>
+{% endblock %}
+
+{% block form %}
+<h2>A form</h2>
+{{form.hidden_tag()}}
+{% for ev in form.evaluations %}
+<div class="row">
+	{{ev.hidden_tag()}}
+	<div class="col-sm-3">
+		<div class="pull-right">
+			{{ev.timestamp.data}}
+		</div>
+	</div>
+	<div class="btn-group col-sm-5" data-toggle="buttons">
+		{% for choice in ev.evaluation %}
+		<label class="btn btn-{{choice.data}} {{"active" if choice.checked else ""}}">
+			<input name="{{choice.name}}" value="{{choice.data}}" type="radio" {{"checked" if choice.checked else ""}}>
+			{{choice.label}}
+		</label>
+		{% endfor %}
+	</div>
+</div>
+{% endfor %}
+
+		<div class="btn-group" data-toggle="buttons">
+			<label class="btn btn-default">
+				<input name="year" value="2011" type="radio">2011
+			</label>
+			<label class="btn btn-default active">
+				<input name="year" value="2012" type="radio" checked>2012
+			</label>
+			<label class="btn btn-default">
+				<input name="year" value="2013" type="radio">2013
+			</label>
+      </div>
+<div class="row">
+	<div class="form-group col-sm-2 col-sm-offset-1">
+		<button type="submit" class="btn btn-primary">Submit</button>
+	</div>
+</div>
+
+{% endblock %}

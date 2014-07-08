@@ -94,40 +94,21 @@ def challenge(id):
         flash("Access denied", "error")
         return redirect(url_for('.list_challenges'))
 
-    class FormValidationError(Exception): pass
-    form = forms.ChallengeProgressForm()
+    form = forms.challenge_forms[ch.type]()
+    form.init_from_challenge(ch)
     if form.validate_on_submit():
-        # add_progress if necessary
-        #   also multiple items?
-        # completely change_progress if necessary
+        flash(repr(form.data))
         try:
-            for progress_subform in form.existing_progress:
-                p = models.ChallengeProgress.query.get(int(progress_subform.data['id']))
-                if p is None:
-                    raise FormValidationError('Unknown progress_id')
-                if p.challenge_id != ch.id:
-                    raise FormValidationError('Progress data belongs to different challenge')
-                p.value = progress_subform.value.data
-                p.timestamp = progress_subform.timestamp.data
-                p.note = progress_subform.note.data
-            if form.add_progress.value.data:
-                p = ch.add_progress(form.add_progress.value.data,
-                                    form.add_progress.timestamp.data, form.add_progress.note.data)
-            elif form.add_progress.note.data:
-                raise FormValidationError('If you want to store a new progress update, you have to submit a value')
-            #   ! make sure it belongs to this challenge
-            #   change values
-            #   remove items
-            models.db.session.commit()
+            ch.update_from_form_data(form.data)
             return redirect(url_for('.challenge', id=id))
-        except FormValidationError as err:
+        except forms.FormValidationError as err:
             models.db.session.rollback()
             flash(err.message, 'error')
     if request.method == 'GET':
-        form.read_existing_progress(ch)
-        form.add_progress.timestamp.data = date.today()
+        form.load_from_challenge(ch, today=date.today())
     flash_errors(form)
-    return render_template("challenge.html", challenge=ch, form=form)
+    flash(form.data)
+    return render_template("%s_challenge.html"%ch.type, challenge=ch, form=form)
 
 
 # Error Handlers

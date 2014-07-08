@@ -1,7 +1,7 @@
 from flask import flash
 import hashlib
 from random import choice
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from threading import Thread
 from flask.ext.mail import Mail, Message
 import os
@@ -68,3 +68,10 @@ def pretty_timedelta(timedelta_object):
 
 def none2now(now=None):
     return datetime.now() if now is None else now
+
+def none2today(today=None):
+    return date.today() if today is None else today
+
+def daterange(start_date, end_date):
+    for n in range(int ((end_date - start_date).days)):
+        yield start_date + timedelta(n)

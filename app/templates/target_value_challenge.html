@@ -1,0 +1,57 @@
+{% extends "challenge.html" %}
+{% block challenge_jumbotron_left %}
+<div>
+	<span class="done"> {{challenge.current_value()}} </span>
+	/
+	<span class="target"> {{challenge.target_value}} </span>
+	<span class="unit"> {{challenge.unit}} done</span>
+</div>
+<div>
+	{{ progress_bar(100*challenge.value_ratio(), context)}}
+</div>
+{% endblock %}
+
+{% block form %}
+<h2>Add new progress</h2>
+{{form.hidden_tag()}}
+<div class="row">
+	{{form.add_progress.hidden_tag()}}
+	{% with pre=form.add_progress.timestamp.label %}
+	{{datepicker(form.add_progress.timestamp, pre=pre)}}
+	{% endwith %}
+	<div class="col-sm-2">
+		{{ form.add_progress.value.label }}
+		<div class="input-group">
+			{{ form.add_progress.value(class_="form-control", placeholder=form.add_progress.value.label.text) }}
+			<span class="input-group-addon">{{challenge.unit}}</span>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		{{ form.add_progress.note.label }}
+		{{ form.add_progress.note(class_="form-control", placeholder=form.add_progress.note.label.text) }}
+	</div>
+</div>
+<h2>Modify previous progress</h2>
+{% for progress in form.existing_progress %}
+<div class="row">
+	{{progress.hidden_tag()}}
+	{{datepicker(progress.timestamp)}}
+	<div class="col-sm-2">
+		{{ progress.value.label(class_="sr-only") }}
+		<div class="input-group">
+			{{ progress.value(class_="form-control", placeholder=progress.value.label.text) }}
+			<span class="input-group-addon">{{challenge.unit}}</span>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		{{ progress.note.label(class_="sr-only") }}
+		{{ progress.note(class_="form-control", placeholder=progress.note.label.text) }}
+	</div>
+</div>
+{% endfor %}
+<div class="row">
+	<div class="form-group col-sm-2 col-sm-offset-1">
+		<button type="submit" class="btn btn-primary">Submit</button>
+	</div>
+</div>
+{% endblock %}
