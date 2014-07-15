@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from flask.ext.script import prompt, prompt_choices, prompt_bool
 from flask.ext.script import Manager, Command, Option
 from flask.ext.migrate import Migrate, MigrateCommand
