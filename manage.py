@@ -4,6 +4,7 @@ from flask.ext.migrate import Migrate, MigrateCommand
 
 from app import create_app
 from app import models
+from datetime import datetime
 
 app = create_app()
 manager = Manager(app)
@@ -18,6 +19,16 @@ manager.add_command('db', MigrateCommand)
 @MigrateCommand.command
 def create_tables():
     models.db.create_all()
+
+@MigrateCommand.command
+def backup():
+    filename = app.config['SQLALCHEMY_DATABASE_URI'].replace('sqlite:///','')
+    timestamp = datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
+    target_filename = filename.replace('.db', '_backup_%s.db'%timestamp)
+    assert target_filename != filename
+    import shutil
+    shutil.copy2(filename, target_filename)
+    print "Created backup '%s'." % target_filename
 
 @manager.command
 def list_users():
