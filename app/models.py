@@ -6,7 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, date, timedelta
 import itertools
 import math
-from support import none2now, totalseconds
+from support import none2now, totalseconds, daterange
 
 from forms import FormValidationError
 
@@ -224,23 +224,32 @@ class DailyEvaluationChallenge(Challenge):
     label_good = db.Column(db.String(30))
     label_marginal = db.Column(db.String(30))
     label_bad = db.Column(db.String(30))
-    
+
+    def __init__(self, user, duration, title, description,
+                 points_success=10, points_fail=-5,
+                 now=None, **kwargs):
+        super(DailyEvaluationChallenge, self).__init__(user, duration, title, description,
+                 points_success, points_fail, now, **kwargs)
+        for timestamp in daterange(self.start, self.end):
+            DailyEvaluationChallengeEvaluation(self, timestamp)
+
     def is_success(self):
-        return "TODO"
+        return False
 
     def is_fail(self, now=None):
-        return "TODO"
+        return False
 
     def bootstrap_context(self, now=None):
-        print "TODO"
         return "info"
 
     def calc_points(self, now=None):
-        print "TODO"
-        return self.points_fail
+        return 0
 
     def update_from_form_data(self, data):
-        return "todo"
+        for data_ev in data['evaluations']:
+            db_ev = self.evaluations.filter_by(timestamp=data_ev['timestamp']).one()
+            db_ev.evaluation = data_ev['evaluation']
+        db.session.commit()
 
 class TargetValueChallenge(Challenge):
     __tablename__ = 'TargetValueChallenges'
@@ -304,7 +313,7 @@ class TargetValueChallenge(Challenge):
             raise FormValidationError(
                 'If you want to store a new progress update, you have to submit a value')
 
-class TargetValueChallengeProgress(Base):
+class TargetValueChallengeProgress(db.Model):
     __tablename__ = 'TargetValueChallengeProgresses'
     id = db.Column(db.Integer, primary_key = True)
     challenge_id = db.Column(db.Integer, db.ForeignKey('TargetValueChallenges.id'))
@@ -319,6 +328,21 @@ class TargetValueChallengeProgress(Base):
         self.value = value
         self.timestamp = none2now(timestamp)
         self.note = note
+        db.session.add(self)
+        db.session.commit()
+
+class DailyEvaluationChallengeEvaluation(db.Model):
+    __tablename__ = 'DailyEvaluationChallengeEvaluations'
+    id = db.Column(db.Integer, primary_key = True)
+    challenge_id = db.Column(db.Integer, db.ForeignKey('DailyEvaluationChallenges.id'))
+    challenge = db.relationship("DailyEvaluationChallenge",
+                                backref=db.backref("evaluations", lazy="dynamic"))
+    evaluation = db.Column(db.String)
+    timestamp = db.Column(db.Date)
+    def __init__(self, challenge, timestamp, evaluation=""):
+        self.challenge = challenge
+        self.evaluation = evaluation
+        self.timestamp = timestamp
         db.session.add(self)
         db.session.commit()
 

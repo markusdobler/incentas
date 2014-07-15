@@ -1,6 +1,6 @@
-from flask.ext.script import Manager, prompt, prompt_choices, prompt_bool
+from flask.ext.script import prompt, prompt_choices, prompt_bool
+from flask.ext.script import Manager, Command, Option
 from flask.ext.migrate import Migrate, MigrateCommand
-from flask.ext.sqlalchemy import SQLAlchemy
 
 from app import create_app
 from app import models
@@ -35,8 +35,12 @@ def list(username=None):
     for user in query.all():
         print "%s (%s)" % (user.username, user.fullname)
         for ch in user.challenges:
-            print " * %s: %.1f/%.1f (%4.1fP)" % (ch.title, ch.current_value(),
-                                     ch.target_value, ch.calc_points())
+            try:
+                print " * %s: %.1f/%.1f (%4.1fP)" % (ch.title, ch.current_value(),
+                                         ch.target_value, ch.calc_points())
+            except:
+                print " * %s: (%4.1fP)" % (ch.title, ch.calc_points())
+
 
 class NewChallengeCommand(Command):
     default_options = (

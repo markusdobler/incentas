@@ -53,7 +53,6 @@ class DailyEvaluationChallengeForm(Form):
         evaluation = RadioField('Evaluation', [Optional()])
 
     evaluations = FieldList(FormField(Evaluation))
-    test = TextField('test', [Required()])
 
     def init_from_challenge(self, ch):
         for ev in self.evaluations:
@@ -67,12 +66,10 @@ class DailyEvaluationChallengeForm(Form):
         )
 
     def load_from_challenge(self, ch, today=None):
-        for timestamp in daterange(ch.start, ch.end):
-            data = dict(timestamp=timestamp)
-            if timestamp.day%2:
-                data['evaluation'] = 'marginal'
-            self.evaluations.append_entry(data)
-            self._set_choices(self.evaluations[-1], ch)
+        for ev in ch.evaluations:
+            self.evaluations.append_entry(dict(timestamp=ev.timestamp, evaluation=ev.evaluation))
+        for ev in self.evaluations:
+            self._set_choices(ev, ch)
 
 challenge_forms = {
     'target_value': ChallengeProgressForm,

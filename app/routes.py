@@ -97,7 +97,6 @@ def challenge(id):
     form = forms.challenge_forms[ch.type]()
     form.init_from_challenge(ch)
     if form.validate_on_submit():
-        flash(repr(form.data))
         try:
             ch.update_from_form_data(form.data)
             return redirect(url_for('.challenge', id=id))
@@ -107,7 +106,6 @@ def challenge(id):
     if request.method == 'GET':
         form.load_from_challenge(ch, today=date.today())
     flash_errors(form)
-    flash(form.data)
     return render_template("%s_challenge.html"%ch.type, challenge=ch, form=form)
 
 
