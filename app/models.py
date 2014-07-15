@@ -9,10 +9,8 @@ import math
 from support import none2now, totalseconds
 
 db = SQLAlchemy()
-Base = declarative_base()
-Base.query = db.session.query_property()
 
-class User(Base):
+class User(db.Model):
     __tablename__ = 'Users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(25), unique=True)
@@ -79,7 +77,7 @@ class User(Base):
         db.session.commit()
 
 
-class Measurement(Base):
+class Measurement(db.Model):
     __tablename__ = 'Measurements'
     id = db.Column(db.Integer, primary_key = True)
     type = db.Column(db.String(20))
@@ -100,7 +98,7 @@ class Measurement(Base):
     def __repr__(self):
         return "<%s: %5.3f>" % (self.type, self.value)
 
-class Assessment(Base):
+class Assessment(db.Model):
     __tablename__ = 'Assessments'
     id = db.Column(db.Integer, primary_key = True)
     type = db.Column(db.String(20))
@@ -162,7 +160,7 @@ class DailyAssessment(Assessment):
             # self._enddate = timestamp + timedelta(days=1)
 
 
-class Challenge(Base):
+class Challenge(db.Model):
     __tablename__ = 'Challenges'
     id = db.Column(db.Integer, primary_key = True)
     user_id = db.Column(db.Integer, db.ForeignKey('Users.id'))
@@ -251,7 +249,7 @@ class Challenge(Base):
         ChallengeProgress(self, value, timestamp=timestamp, note=note)
 
 
-class ChallengeProgress(Base):
+class ChallengeProgress(db.Model):
     __tablename__ = 'ChallengeProgresses'
     id = db.Column(db.Integer, primary_key = True)
     challenge_id = db.Column(db.Integer, db.ForeignKey('Challenges.id'))
@@ -272,4 +270,4 @@ class ChallengeProgress(Base):
 
 def create_tables(app):
     with app.app_context():
-        Base.metadata.create_all(bind=db.engine)
+        db.create_all()

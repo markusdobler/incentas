@@ -16,7 +16,7 @@ def create_app(config_object_name='config'):
 
     from models import db, create_tables, User
     db.init_app(app)
-    create_tables(app)
+    # create_tables(app)
 
     from routes import blueprints
     for bp in blueprints:

@@ -1,5 +1,6 @@
 from flask.ext.script import Manager, prompt, prompt_choices, prompt_bool
 from flask.ext.migrate import Migrate, MigrateCommand
+from flask.ext.sqlalchemy import SQLAlchemy
 
 from app import create_app
 from app import models
@@ -13,6 +14,10 @@ def hello():
 
 migrate = Migrate(app, models.db)
 manager.add_command('db', MigrateCommand)
+
+@MigrateCommand.command
+def create_tables():
+    models.db.create_all()
 
 @manager.command
 def list_users():
