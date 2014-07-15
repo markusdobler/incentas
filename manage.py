@@ -1,4 +1,5 @@
 from flask.ext.script import Manager, prompt, prompt_choices, prompt_bool
+from flask.ext.migrate import Migrate, MigrateCommand
 
 from app import create_app
 from app import models
@@ -9,6 +10,9 @@ manager = Manager(app)
 @manager.command
 def hello():
     print "hello"
+
+migrate = Migrate(app, models.db)
+manager.add_command('db', MigrateCommand)
 
 @manager.command
 def list_users():
