@@ -44,14 +44,6 @@ class User(db.Model):
     def check_password(self, password):
         return check_password_hash(self.pw_hash, password)
 
-    @property
-    def password(self):
-        return None
-
-    @password.setter
-    def password(self, password):
-        self.set_password(password)
-
     def calc_challenge_points(self, now=None):
         return sum(ch.calc_points(now) for ch in self.challenges)
 
