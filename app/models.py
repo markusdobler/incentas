@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, date, timedelta
 import itertools
 import math
-from support import none2now, totalseconds, daterange
+from support import none2now, totalseconds, daterange, csv2array, array2csv
 
 from forms import FormValidationError
 
@@ -35,27 +35,33 @@ class User(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def __str__(self):
+        return self.fullname
+
     def set_password(self, password):
         self.pw_hash = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.pw_hash, password)
 
+    @property
+    def password(self):
+        return None
+
+    @password.setter
+    def password(self, password):
+        self.set_password(password)
+
     def calc_challenge_points(self, now=None):
         return sum(ch.calc_points(now) for ch in self.challenges)
 
     @property
     def measurement_types(self):
-        try:
-            self._measurement_types_cache
-        except AttributeError:
-            self._measurement_types_cache = self._measurement_types_as_string.split(':')
-        return self._measurement_types_cache
+        return csv2array(self._measurement_types_as_string)
 
     @measurement_types.setter
     def measurement_types(self, new_value):
-        self._measurement_types_cache = new_value
-        self._measurement_types_as_string = ":".join(new_value)
+        self._measurement_types_as_string = array2csv(new_value)
         db.session.commit()
 
 

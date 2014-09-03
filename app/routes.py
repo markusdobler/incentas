@@ -52,10 +52,17 @@ def logout():
     return redirect(url_for("incentas.index"))
 
 
-@user_management.route("/settings")
+@user_management.route("/settings", methods=['GET','POST'])
 @login_required
 def settings():
-    return "settings, authenticated=%s" % current_user.is_authenticated()
+    form = forms.SettingsForm()
+    if request.method=='GET':
+        form.init_from_user(current_user)
+    if form.validate_on_submit():
+        form.update_user_settings(current_user)
+        return redirect(url_for('.settings'))
+    flash_errors(form)
+    return render_template('settings.html', form=form)
 
 
 @user_management.route("/register", methods=['GET','POST'])

@@ -1,9 +1,11 @@
+from flask import flash
+import models
 from flask.ext.wtf import Form
 from wtforms import TextField, PasswordField, IntegerField, RadioField, DateTimeField, DateField
 from wtforms import FileField, HiddenField, TextAreaField, FieldList, FormField, DecimalField
-from wtforms.validators import Required, Length, NumberRange, Optional
+from wtforms.validators import Required, Length, NumberRange, Optional, EqualTo
 
-from support import none2today, daterange
+from support import none2today, daterange, csv2array, array2csv
 
 class FormValidationError(Exception): pass
 
@@ -76,6 +78,32 @@ challenge_forms = {
     'target_value': ChallengeProgressForm,
     'daily_evaluation': DailyEvaluationChallengeForm,
 }
+
+
+class SettingsForm(Form):
+    fullname = TextField('Name')
+    height = DecimalField('Height (m)')
+    password = PasswordField('Password', [Optional(), Length(min=6, max=40),
+                                          EqualTo('confirm', 'Passwords must match')])
+    confirm = PasswordField('Confirm Password')
+    measurement_types = TextField('Measurement Types')
+    assessment_types = TextField('Assessment Types')
+
+    def init_from_user(self, user):
+        self.fullname.data = user.fullname
+        self.height.data = user.height
+        self.measurement_types.data = user._measurement_types_as_string
+        self.assessment_types.data = user._assessment_types_as_string
+
+    def update_user_settings(self, user):
+        if self.password.data:
+            user.set_password(self.password.data)
+            flash('Password updated', 'success')
+        user._measurement_types_as_string = self.measurement_types.data
+        user._assessment_types_as_string = self.assessment_types.data
+        user.fullname = self.fullname.data
+        user.height = self.height.data
+        models.db.session.commit()
 
 class MeasurementForm(Form):
     type = TextField('Type', [Required()])

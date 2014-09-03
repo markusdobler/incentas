@@ -4,7 +4,7 @@ from random import choice
 from datetime import datetime, date, timedelta
 from threading import Thread
 from flask.ext.mail import Mail, Message
-import os
+import os, StringIO, csv
 
 from flask.ext.login import LoginManager
 login_manager = LoginManager()
@@ -75,3 +75,12 @@ def none2today(today=None):
 def daterange(start_date, end_date):
     for n in range(int ((end_date - start_date).days)):
         yield start_date + timedelta(n)
+
+
+def csv2array(str):
+    return list(csv.reader((str,)))[0]
+
+def array2csv(arr):
+    queue = StringIO.StringIO()
+    csv.writer(queue).writerow(arr)
+    return queue.getvalue().strip()
