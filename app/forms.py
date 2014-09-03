@@ -75,3 +75,14 @@ challenge_forms = {
     'target_value': ChallengeProgressForm,
     'daily_evaluation': DailyEvaluationChallengeForm,
 }
+
+class MeasurementForm(Form):
+    type = TextField('Type', [Required()])
+    value = DecimalField('Value', [Optional(), NumberRange()])
+
+class AddMeasurementsForm(Form):
+    new_measurements = FieldList(FormField(MeasurementForm))
+
+    def init_from_user(self, user):
+        for t in user.measurement_types:
+            self.new_measurements.append_entry(dict(type=t))

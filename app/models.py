@@ -83,7 +83,7 @@ class Measurement(db.Model):
     __tablename__ = 'Measurements'
     id = db.Column(db.Integer, primary_key = True)
     type = db.Column(db.String(20))
-    value = db.Column(db.Float)
+    value = db.Column(db.Numeric)
     timestamp = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('Users.id'))
     user = db.relationship("User",

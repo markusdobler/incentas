@@ -6147,15 +6147,6 @@ img.bottom-right {
 img.bottom-left {
   left: 0;
 }
-dt {
-  color: #051e52;
-  font-size: 20pt;
-  margin-top: 20px;
-}
-dd {
-  margin-left: 40px;
-  min-width: 700px;
-}
 .btn-good {
   color: #2d7242;
   background-color: #b1f1c4;

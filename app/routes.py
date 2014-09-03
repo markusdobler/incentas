@@ -15,8 +15,10 @@ user_management = Blueprint('user_management', __name__,
                             template_folder='templates', static_folder='static')
 challenges = Blueprint('challenges', __name__,
                             template_folder='templates', static_folder='static')
+measurements = Blueprint('measurements', __name__,
+                            template_folder='templates', static_folder='static')
 
-blueprints = [bp, user_management, challenges]
+blueprints = [bp, user_management, challenges, measurements]
 
 @bp.route("/")
 def index():
@@ -108,6 +110,23 @@ def challenge(id):
     flash_errors(form)
     return render_template("%s_challenge.html"%ch.type, challenge=ch, form=form)
 
+@measurements.route('/measurements', methods=['GET','POST'])
+@login_required
+def measurements():
+    form = forms.AddMeasurementsForm()
+    if request.method=='GET':
+        form.init_from_user(current_user)
+    if form.validate_on_submit():
+        timestamp = datetime.now()
+        for measurement in form.new_measurements:
+            type = measurement.data['type']
+            value = measurement.data['value']
+            if value is None: continue
+            flash("%s: %f" % (type, value))
+            models.Measurement(current_user, type, value, timestamp)
+        return redirect(url_for('.measurements'))
+    flash_errors(form)
+    return render_template('measurements.html', form=form, user=current_user)
 
 # Error Handlers
 
