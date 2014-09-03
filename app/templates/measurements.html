@@ -1,0 +1,39 @@
+{% extends "template.html" %}
+{% block title %} - Measurements{% endblock %}
+
+{% block content_no_row %}
+<div class="row">
+	<h1>Measurements</h1>
+	<div class="col-sm-10 col-sm-offset-1">
+		<form method="POST" action="">
+			{% block form %}
+			{{form.hidden_tag()}}
+			<h2>Add new measurements</h2>
+			<div class="row form-group">
+				{% for measurement in form.new_measurements %}
+				{{measurement.hidden_tag()}}
+				<div class="col-sm-2">
+					{{measurement.value(class_="form-control", placeholder=measurement.form.type.data)}}
+				</div>
+				{% endfor %}
+				<div class="col-sm-2">
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</div>
+			</div>
+
+			<h2> Previous Measurements </h2>
+			{% for type, measurements in user.measurements_grouped_by_type() %}
+			<h3>{{type}}</h3>
+			<dl class="dl-horizontal">
+				{% for m in measurements %}
+				<dt>{{pretty_date(m.timestamp)}}</dt>
+				<dd>{{m.value.normalize()}}</dd>
+				{% endfor %}
+			</dl>
+				
+			{% endfor %}
+			{% endblock %}
+		</form>
+	</div>
+</div>
+{% endblock %}

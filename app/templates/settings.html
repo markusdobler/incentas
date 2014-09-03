@@ -1,0 +1,33 @@
+{% extends "template.html" %}
+{% block title %} - Settings{% endblock %}
+{% block content_no_row %}
+<div class="row">
+	<div class="col-sm-6 col-sm-offset-3">
+		<h1>{{current_user}}'s Settings</h1>
+		<form method="POST" action="">
+			{{form.hidden_tag()}}
+			{{ labeled_inputfield_group(form.fullname) }}
+			<div class="form-group">
+				{{ form.password.label }}
+				<div class="row">
+					<div class="col-sm-6"> {{ inputfield(form.password) }} </div>
+					<div class="col-sm-6"> {{ inputfield(form.confirm) }} </div>
+				</div>
+			</div>
+			{{labeled_inputfield_group(form.measurement_types)}}
+			{{labeled_inputfield_group(form.assessment_types)}}
+			<button type="submit" class="btn btn-primary">Save</button>
+		</form>
+	</div>
+</div>
+{% endblock %}
+
+{% macro labeled_inputfield_group(element) %}
+<div class="form-group">
+	{{ element.label }}{{inputfield(element)}}
+</div>
+{% endmacro %}
+
+{% macro inputfield(element) %}
+	{{ element(class_="form-control", placeholder=element.label.text) }}
+{% endmacro %}
