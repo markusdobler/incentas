@@ -20,7 +20,9 @@
     var $button = $(ev.target);
     var $display = $button.siblings('.datepicker-display')
     var $hiddenInput = $button.siblings('.datepicker-hidden-input');
-    $display.text(ev.format());
-    $hiddenInput.val(ev.format());
+  $display.text(ev.format());
+  $hiddenInput.val(ev.format());
   });
+
+  $('.tooltip-trigger').tooltip({'container':'body'})
 }).call(this);

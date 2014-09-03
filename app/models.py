@@ -67,8 +67,7 @@ class User(db.Model):
 
     def measurements_grouped_by_type(self):
         measurements = self.measurements.order_by(Measurement.type, Measurement.timestamp).all()
-        m_dict = dict((k, list(g)) for k,g in itertools.groupby(measurements, lambda x: x.type))
-        return [(k, m_dict.get(k, [])) for k in self.measurement_types]
+        return [(k, list(g)) for k,g in itertools.groupby(measurements, lambda x: x.type)]
 
     @property
     def assessment_types(self):

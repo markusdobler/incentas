@@ -106,7 +106,7 @@ class SettingsForm(Form):
         models.db.session.commit()
 
 class MeasurementForm(Form):
-    type = TextField('Type', [Required()])
+    type = HiddenField('Type')
     value = DecimalField('Value', [Optional(), NumberRange()])
 
 class AddMeasurementsForm(Form):

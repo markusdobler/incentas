@@ -36,6 +36,12 @@ def flash_errors(form, prepend=''):
                     flash("%s%s: %s" % (prepend, label, value), 'error')
             pass
 
+def pretty_date(datetime_object):
+    return datetime_object.strftime("%Y-%m-%d")
+
+def pretty_time(datetime_object):
+    return datetime_object.strftime("%H:%M:%S")
+
 def pretty_datetime(datetime_object):
     return datetime_object.strftime("%Y-%m-%d, %H:%M:%S")
 

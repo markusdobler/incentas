@@ -26,7 +26,11 @@
 			<h3>{{type}}</h3>
 			<dl class="dl-horizontal">
 				{% for m in measurements %}
-				<dt>{{pretty_date(m.timestamp)}}</dt>
+				<dt>
+				{%call tooltip(pretty_time(m.timestamp), placement='left')%}
+					{{pretty_date(m.timestamp)}}
+				{%endcall%}
+				</dt>
 				<dd>{{m.value.normalize()}}</dd>
 				{% endfor %}
 			</dl>
@@ -37,3 +41,9 @@
 	</div>
 </div>
 {% endblock %}
+
+{% macro tooltip(title) %}
+<span class="tooltip-trigger" data-toggle="tooltip" data-title="{{title}}" {%for k,v in kwargs.items()%} data-{{k}}="{{v}}" {%endfor%}>
+	{{ caller() }}
+</span>
+{% endmacro %}

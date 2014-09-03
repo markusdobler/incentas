@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, request
 import forms
 from flask.ext.login import login_user, logout_user, login_required, current_user
-from support import flash_errors
+from support import flash_errors, pretty_date, pretty_time
 import models
 from datetime import datetime, date, timedelta
 
@@ -19,6 +19,10 @@ measurements = Blueprint('measurements', __name__,
                             template_folder='templates', static_folder='static')
 
 blueprints = [bp, user_management, challenges, measurements]
+
+@measurements.context_processor
+def utility_processor():
+    return dict(pretty_date=pretty_date, pretty_time=pretty_time)
 
 @bp.route("/")
 def index():
