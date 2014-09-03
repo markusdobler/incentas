@@ -1,7 +1,6 @@
 from flask import current_app, flash
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Float
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, date, timedelta
 import itertools
@@ -176,8 +175,8 @@ class Challenge(db.Model):
     description = db.Column(db.Text)
     start = db.Column(db.DateTime)
     end = db.Column(db.DateTime)
-    points_success = db.Column(db.Float)
-    points_fail = db.Column(db.Float)
+    points_success = db.Column(db.Numeric)
+    points_fail = db.Column(db.Numeric)
 
     def __init__(self, user, duration, title, description,
                  points_success=10, points_fail=-5,
@@ -255,7 +254,7 @@ class TargetValueChallenge(Challenge):
     __tablename__ = 'TargetValueChallenges'
     id = db.Column(db.Integer, db.ForeignKey('Challenges.id'), primary_key = True)
     __mapper_args__ = {'polymorphic_identity':'target_value'}
-    target_value = db.Column(db.Float)
+    target_value = db.Column(db.Numeric)
     unit = db.Column(db.String(20))
 
 
@@ -319,7 +318,7 @@ class TargetValueChallengeProgress(db.Model):
     challenge_id = db.Column(db.Integer, db.ForeignKey('TargetValueChallenges.id'))
     challenge = db.relationship("TargetValueChallenge",
                                 backref=db.backref("progress", lazy="dynamic"))
-    value = db.Column(db.Float)
+    value = db.Column(db.Numeric)
     timestamp = db.Column(db.Date)
     note = db.Column(db.Text(500))
 
