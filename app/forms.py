@@ -7,11 +7,12 @@ from support import none2today, daterange
 
 class FormValidationError(Exception): pass
 
+PASSWORD_LENGTH = Length(min=6, max=40)
 
 class RegisterForm(Form):
     username        = TextField('Username', validators = [Required(), Length(min=3, max=25)])
     fullname        = TextField('Full name (optional)', validators = [Length(max=100)])
-    password    = PasswordField('Password', validators = [Required(), Length(min=6, max=40)])
+    password    = PasswordField('Password', validators = [Required(), PASSWORD_LENGTH])
 
 class LoginForm(Form):
     name        = TextField('Username', [Required()])
