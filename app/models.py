@@ -16,6 +16,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(25), unique=True)
     fullname = db.Column(db.String(100))
+    height = db.Column(db.Numeric)
     pw_hash = db.Column(db.String(160))
     _measurement_types_as_string = db.Column(db.Text)
     _assessment_types_as_string = db.Column(db.Text)
