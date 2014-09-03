@@ -347,6 +347,8 @@ class DailyEvaluationChallengeEvaluation(db.Model):
         db.session.commit()
 
 
-def create_tables(app):
+def create_tables(app=None):
+    if app is None:
+        app = current_app
     with app.app_context():
         db.create_all()
