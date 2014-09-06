@@ -59,11 +59,16 @@ def logout():
 @user_management.route("/settings", methods=['GET','POST'])
 @login_required
 def settings():
-    form = forms.SettingsForm()
-    if request.method=='GET':
-        form.init_from_user(current_user)
+    user = current_user
+    obj = dict2obj(fullname=user.fullname, height=user.height)
+    form = forms.SettingsForm(obj=obj)
     if form.validate_on_submit():
-        form.update_user_settings(current_user)
+        if form.password.data:
+            user.set_password(form.password.data)
+            flash('Password updated', 'success')
+        user.fullname = form.fullname.data
+        user.height = form.height.data
+        models.db.session.commit()
         return redirect(url_for('.settings'))
     flash_errors(form)
     return render_template('settings.html', form=form)

@@ -86,24 +86,6 @@ class SettingsForm(Form):
     password = PasswordField('Password', [Optional(), Length(min=6, max=40),
                                           EqualTo('confirm', 'Passwords must match')])
     confirm = PasswordField('Confirm Password')
-    measurement_types = TextField('Measurement Types')
-    assessment_types = TextField('Assessment Types')
-
-    def init_from_user(self, user):
-        self.fullname.data = user.fullname
-        self.height.data = user.height
-        self.measurement_types.data = user._measurement_types_as_string
-        self.assessment_types.data = user._assessment_types_as_string
-
-    def update_user_settings(self, user):
-        if self.password.data:
-            user.set_password(self.password.data)
-            flash('Password updated', 'success')
-        user._measurement_types_as_string = self.measurement_types.data
-        user._assessment_types_as_string = self.assessment_types.data
-        user.fullname = self.fullname.data
-        user.height = self.height.data
-        models.db.session.commit()
 
 class MeasurementForm(Form):
     type = HiddenField('Type')

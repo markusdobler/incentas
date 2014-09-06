@@ -15,8 +15,6 @@
 					<div class="col-sm-6"> {{ inputfield(form.confirm) }} </div>
 				</div>
 			</div>
-			{{labeled_inputfield_group(form.measurement_types)}}
-			{{labeled_inputfield_group(form.assessment_types)}}
 			<button type="submit" class="btn btn-primary">Save</button>
 		</form>
 	</div>
@@ -24,9 +22,13 @@
 {% endblock %}
 
 {% macro labeled_inputfield_group(element) %}
+{% if element.type in "TextField DecimalField".split() %}
 <div class="form-group">
 	{{ element.label }}{{inputfield(element)}}
 </div>
+{% else %}
+<div class="error">unknown field type "{{element.type}}"</div>
+{% endif %}
 {% endmacro %}
 
 {% macro inputfield(element) %}
