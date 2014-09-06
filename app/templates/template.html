@@ -22,6 +22,13 @@
                 <a class="navbar-brand" href="{{url_for('incentas.index')}}">Incentas</a>
             </div>
             <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    {% if current_user.is_authenticated() %}
+                    <li><a href="{{url_for('challenges.index')}}">Challenges</a></li>
+                    <li><a href="{{url_for('measurements.index')}}">Measurements</a></li>
+                    {% else %}
+                    {% endif %}
+                </ul>
                 <ul class="nav navbar-nav navbar-right">
                     {% if current_user.is_authenticated() %}
                     <li><a href="{{url_for('user_management.settings')}}">Settings</a></li>

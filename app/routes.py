@@ -87,7 +87,7 @@ def register():
 
 @challenges.route("/challenge")
 @login_required
-def list_challenges():
+def index():
     return render_template("list_challenges.html",
                            challenges=current_user.challenges)
 
