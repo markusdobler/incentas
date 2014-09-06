@@ -20,11 +20,13 @@
 					<button type="submit" class="btn btn-primary">Submit</button>
 				</div>
 			</div>
+			<a href="{{url_for('crud/measurement/manage.index')}}">manage measurement categories</a>
 		</form>
 
 			<h2> Previous Measurements </h2>
 			{% for measurement_category in user.measurements %}
 			<h3>{{measurement_category.label}}</h3>
+			<a href="{{url_for('crud/measurement/manage/<label>.index', label=measurement_category.label)}}">edit records</a>
 			<dl class="dl-horizontal">
 				{% for m in measurement_category.series %}
 				<dt>

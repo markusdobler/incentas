@@ -1,0 +1,50 @@
+{% extends "template.html" %}
+{% block title %} - CRUD{% endblock %}
+{% block content_no_row %}
+<div class="row">
+	<div class="col-sm-6 col-sm-offset-3">
+		<h1>Crud</h1>
+		{% if allow_create %}
+		<a href="{{url_for('.create')}}">create new row</a>
+		{% endif %}
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					{% for field in fields %}
+					<th>{{field}}</th>
+					{% endfor %}
+					<th>actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for element in query.all() %}
+				<tr>
+					{% for field in fields %}
+					<td>
+						{{element[field]}}
+					</td>
+					{% endfor %}
+					<td>
+						<a href="{{url_for('.edit', id=element.id, **kwargs)}}">edit</a>
+						<a class="delete-trigger" delete-id="{{element.id}}">delete</a>
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+{% endblock %}
+
+{% block bottom_extra %}
+<script language="javascript"> 
+	$('.delete-trigger').click(function(ev){
+		id = $(ev.target).attr('delete-id')
+		console.log(id)
+		$.post("{{url_for('.delete', id="-1", **kwargs)}}".replace("-1",id), {}, function () {
+			window.location.href = "{{url_for('.index', **kwargs)}}"
+		})
+	})
+
+</script>
+{% endblock %}

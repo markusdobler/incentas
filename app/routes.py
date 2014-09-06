@@ -138,6 +138,23 @@ def index():
     flash_errors(form)
     return render_template('measurements.html', form=form, user=current_user)
 
+from flask_crud import *
+
+fields=('value', 'timestamp')
+
+@measurements.record_once
+def register_crud_bps(state):
+    for bp in (
+        crud_bp(models.db.session,
+                lambda label: current_user.measurements.filter_by(label=label).one().series,
+                fields, '/measurement/manage/<label>'),
+        crud_bp(models.db.session,
+                lambda : current_user.measurements, ('label',),
+                '/measurement/manage', models.MeasurementCategory, lambda d:
+                dict({'user_id':current_user.id}, **d)),
+    ):
+        state.app.register_blueprint(bp)
+
 # Error Handlers
 
 @bp.app_errorhandler(500)

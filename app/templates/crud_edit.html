@@ -1,0 +1,36 @@
+{% extends "template.html" %}
+{% block title %} - CRUD Edit{% endblock %}
+{% block content_no_row %}
+<div class="row">
+	<div class="col-sm-6 col-sm-offset-3">
+		<h1>Edit</h1>
+		<form method="post">
+			{{ form.hidden_tag() }}
+			{% for field in form %}
+				{{labeled_inputfield_group(field)}}
+			{% endfor %}
+			<div class="row">
+				<div class="col-sm-2">
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+{% endblock %}
+
+
+{% macro labeled_inputfield_group(element) %}
+{% if element.type == "CSRFTokenField" %}
+{% elif element.type in "TextField DecimalField DateTimeField QuerySelectField".split() %}
+<div class="form-group">
+	{{ element.label }}{{inputfield(element)}}
+</div>
+{% else %}
+<div class="error">unknown field type "{{element.type}}"</div>
+{% endif %}
+{% endmacro %}
+
+{% macro inputfield(element) %}
+	{{ element(class_="form-control", placeholder=element.label.text) }}
+{% endmacro %}
