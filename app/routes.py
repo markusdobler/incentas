@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, request
 import forms
 from flask.ext.login import login_user, logout_user, login_required, current_user
-from support import flash_errors, pretty_date, pretty_time
+from support import flash_errors, pretty_date, pretty_time, dict2obj
 import models
 from datetime import datetime, date, timedelta
 
@@ -121,21 +121,20 @@ def challenge(id):
     flash_errors(form)
     return render_template("%s_challenge.html"%ch.type, challenge=ch, form=form)
 
-@measurements.route('/measurements', methods=['GET','POST'])
+@measurements.route('/measurement', methods=['GET','POST'])
 @login_required
-def measurements():
-    form = forms.AddMeasurementsForm()
-    if request.method=='GET':
-        form.init_from_user(current_user)
+def index():
+    obj = dict2obj(new_measurements=[dict2obj(type=m.label) for m in current_user.measurements])
+    form = forms.AddMeasurementsForm(obj=obj)
     if form.validate_on_submit():
         timestamp = datetime.now()
         for measurement in form.new_measurements:
-            type = measurement.data['type']
             value = measurement.data['value']
             if value is None: continue
-            flash("%s: %f" % (type, value))
-            models.Measurement(current_user, type, value, timestamp)
-        return redirect(url_for('.measurements'))
+            series_label = measurement.data['type']
+            series = current_user.measurements.filter_by(label=series_label).one()
+            models.Measurement(series, value, timestamp)
+        return redirect(url_for('.index'))
     flash_errors(form)
     return render_template('measurements.html', form=form, user=current_user)
 

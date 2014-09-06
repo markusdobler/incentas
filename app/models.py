@@ -47,55 +47,38 @@ class User(db.Model):
     def calc_challenge_points(self, now=None):
         return sum(ch.calc_points(now) for ch in self.challenges)
 
-    @property
-    def measurement_types(self):
-        return csv2array(self._measurement_types_as_string)
 
-    @measurement_types.setter
-    def measurement_types(self, new_value):
-        self._measurement_types_as_string = array2csv(new_value)
-        db.session.commit()
-
-
-    def measurements_grouped_by_type(self):
-        measurements = self.measurements.order_by(Measurement.type, Measurement.timestamp).all()
-        return [(k, list(g)) for k,g in itertools.groupby(measurements, lambda x: x.type)]
-
-    @property
-    def assessment_types(self):
-        try:
-            self._assessment_types_cache
-        except AttributeError:
-            self._assessment_types_cache = self._assessment_types_as_string.split(':')
-        return self._assessment_types_cache
-
-    @assessment_types.setter
-    def assessment_types(self, new_value):
-        self._assessment_types_cache = new_value
-        self._assessment_types_as_string = ":".join(new_value)
-        db.session.commit()
-
-
-class Measurement(db.Model):
-    __tablename__ = 'Measurements'
+class MeasurementCategory(db.Model):
+    __tablename__ = 'MeasurementCategory'
     id = db.Column(db.Integer, primary_key = True)
-    type = db.Column(db.String(20))
-    value = db.Column(db.Numeric)
-    timestamp = db.Column(db.DateTime)
+    label = db.Column(db.String(20))
     user_id = db.Column(db.Integer, db.ForeignKey('Users.id'))
     user = db.relationship("User",
                            backref=db.backref("measurements", lazy="dynamic"))
 
-    def __init__(self, user, type, value, timestamp=None):
+    def __init__(self, user, label):
         self.user = user
-        self.type = type
+        self.label = label
+        db.session.commit()
+
+class Measurement(db.Model):
+    __tablename__ = 'Measurements'
+    id = db.Column(db.Integer, primary_key = True)
+    category_id = db.Column(db.Integer, db.ForeignKey('MeasurementCategory.id'))
+    category = db.relationship("MeasurementCategory",
+                             backref=db.backref("series", lazy="dynamic"))
+    value = db.Column(db.Numeric)
+    timestamp = db.Column(db.DateTime)
+
+    def __init__(self, category, value, timestamp=None):
+        self.category = category
         self.value = value
         self.timestamp = none2now(timestamp)
         db.session.add(self)
         db.session.commit()
 
     def __repr__(self):
-        return "<%s: %5.3f>" % (self.type, self.value)
+        return "<%s: %5.3f>" % (self.timestamp, self.value)
 
 class Assessment(db.Model):
     __tablename__ = 'Assessments'

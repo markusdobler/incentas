@@ -90,3 +90,8 @@ def array2csv(arr):
     queue = StringIO.StringIO()
     csv.writer(queue).writerow(arr)
     return queue.getvalue().strip()
+
+class dict2obj(object):
+    def __init__(self, **kwargs):
+        for k,v in kwargs.items():
+            setattr(self, k, v)

@@ -20,24 +20,24 @@
 					<button type="submit" class="btn btn-primary">Submit</button>
 				</div>
 			</div>
+		</form>
 
 			<h2> Previous Measurements </h2>
-			{% for type, measurements in user.measurements_grouped_by_type() %}
-			<h3>{{type}}</h3>
+			{% for measurement_category in user.measurements %}
+			<h3>{{measurement_category.label}}</h3>
 			<dl class="dl-horizontal">
-				{% for m in measurements %}
+				{% for m in measurement_category.series %}
 				<dt>
 				{%call tooltip(pretty_time(m.timestamp), placement='left')%}
 					{{pretty_date(m.timestamp)}}
 				{%endcall%}
 				</dt>
-				<dd>{{m.value.normalize()}}</dd>
+				<dd>{{"%.4g"%m.value}}</dd>
 				{% endfor %}
 			</dl>
 				
 			{% endfor %}
 			{% endblock %}
-		</form>
 	</div>
 </div>
 {% endblock %}
